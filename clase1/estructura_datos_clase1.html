@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a Estructuras de Datos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .title-slide .author {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 30px 0 20px 0;
+        }
+
+        .professor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .professor-card {
+            background: linear-gradient(135deg, #f6f9fc 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .professor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .professor-card h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .objectives-list {
+            display: grid;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .objective-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 4px solid #28a745;
+            transition: all 0.3s ease;
+        }
+
+        .objective-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.1);
+        }
+
+        .check-icon {
+            width: 24px;
+            height: 24px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .course-structure {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .structure-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .structure-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .structure-card ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .structure-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .structure-card li:last-child {
+            border-bottom: none;
+        }
+
+        .concept-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .concept-element {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .concept-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .concept-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .concept-desc {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .project-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.05);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .comparison-card {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .comparison-card.good {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .comparison-card.bad {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+        }
+
+        .example-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .practice-section {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px;
+            border-radius: 25px;
+            margin: 60px 0;
+        }
+
+        .practice-title {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+                margin: 20px 0;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .professor-grid,
+            .course-structure,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .concept-diagram {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">◀ Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente ▶</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <h1>Introducción a Estructuras de Datos</h1>
+            <h2>Curso de Estructuras de Datos</h2>
+            <div class="author">Julian Eduardo Garzon Giraldo, MsC</div>
+        </div>
+
+        <!-- Slide 2: About the Professor -->
+        <div class="slide">
+            <h1>¿Quiénes estaremos este semestre?</h1>
+            <div class="professor-grid">
+                <div class="professor-card">
+                    <h3>👨‍👩‍👧‍👦 Vida Personal</h3>
+                    <ul>
+                        <li>✓ Casado</li>
+                        <li>✓ Padre de 2 hijos</li>
+                        <li>✓ 7 gatos 🐱</li>
+                    </ul>
+                </div>
+                <div class="professor-card">
+                    <h3>🎓 Formación</h3>
+                    <ul>
+                        <li>✓ Ingeniero de Sistemas</li>
+                        <li>✓ Máster en Gestión de Informática y Telecomunicaciones</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="professor-card" style="margin-top: 20px;">
+                <h3>💼 Experiencia</h3>
+                <ul>
+                    <li>✓ 18 años trabajando en el sector de tecnología</li>
+                    <li>✓ Desarrollo de software, arquitectura, Datos, Agile Coach</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Learning Objectives -->
+        <div class="slide">
+            <h1>¿Qué lograrás en este curso?</h1>
+            <div class="objectives-list">
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Implementar estructuras de datos desde cero (arrays, listas, pilas, colas, árboles)</div>
+                </div>
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Elegir la estructura correcta para cada problema específico</div>
+                </div>
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Analizar la eficiencia de tus algoritmos (Big O básico)</div>
+                </div>
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Resolver problemas complejos usando recursión y backtracking</div>
+                </div>
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Desarrollar un proyecto real que integre múltiples estructuras</div>
+                </div>
+                <div class="objective-item">
+                    <div class="check-icon">✓</div>
+                    <div>Escribir código limpio, eficiente y bien documentado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Course Structure -->
+        <div class="slide">
+            <h1>¿Cómo está organizado el curso?</h1>
+            <div class="course-structure">
+                <div class="structure-card">
+                    <h3>📚 Estructura del Curso</h3>
+                    <ul>
+                        <li>16 semanas totales</li>
+                        <li>4 horas presenciales + 4 independientes</li>
+                        <li>3 bloques temáticos progresivos</li>
+                        <li>1 proyecto integrador transversal</li>
+                    </ul>
+                </div>
+                <div class="structure-card">
+                    <h3>📋 Evaluación</h3>
+                    <ul>
+                        <li>Semana 5: Primera entrega</li>
+                        <li>Semana 11: Segunda entrega</li>
+                        <li>Semana 15: Entrega final</li>
+                        <li>Presentaciones individuales</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="margin-top: 40px; text-align: center;">
+                <h2>Los 3 Bloques del Curso:</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                    <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 12px; text-align: center;">
+                        <h4>Bloque 1 (Sem 1-6)</h4>
+                        <p>Fundamentos + Estructuras Lineales</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); padding: 20px; border-radius: 12px; text-align: center;">
+                        <h4>Bloque 2 (Sem 7-10)</h4>
+                        <p>Estructuras Especializadas</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 20px; border-radius: 12px; text-align: center;">
+                        <h4>Bloque 3 (Sem 11-16)</h4>
+                        <p>Árboles + Proyecto Final</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Project Overview -->
+        <div class="slide">
+            <h1>Tu Proyecto Integrador</h1>
+            <div style="text-align: center; margin: 60px 0;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border-radius: 25px;">
+                    <h2 style="color: white; margin-bottom: 30px;">🚀 Un proyecto que crece contigo</h2>
+                    <p style="font-size: 1.3rem; margin-bottom: 30px;">
+                        Cada semana agregarás nuevas funcionalidades usando las estructuras que aprendas
+                    </p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 40px 0; text-align: center;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+                            <h3 style="color: white; margin-bottom: 15px;">📅 Semana 5</h3>
+                            <p style="margin: 0;">Primera entrega<br>Fundamentos sólidos</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+                            <h3 style="color: white; margin-bottom: 15px;">📅 Semana 11</h3>
+                            <p style="margin: 0;">Segunda entrega<br>Funcionalidades avanzadas</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+                            <h3 style="color: white; margin-bottom: 15px;">📅 Semana 15</h3>
+                            <p style="margin: 0;">Entrega final<br>Sistema completo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <h2 style="text-align: center;">¿Cómo funcionará?</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px;">
+                    <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 25px; border-radius: 15px; text-align: center;">
+                        <h3>🎯 Evolutivo</h3>
+                        <p>Cada semana sumas una nueva estructura de datos al proyecto</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); padding: 25px; border-radius: 15px; text-align: center;">
+                        <h3>🧩 Integrado</h3>
+                        <p>Las estructuras trabajan juntas para resolver problemas reales</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                        <h3>📈 Creciente</h3>
+                        <p>Al final tendrás un sistema complejo que realmente funciona</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: What we'll do today -->
+        <div class="slide">
+            <h1>¿Qué haremos hoy?</h1>
+            <div class="comparison-grid">
+                <div class="comparison-card good">
+                    <h2>🧠 Hoy aprenderás:</h2>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li style="padding: 8px 0;">• ¿Qué son las estructuras de datos y ADTs?</li>
+                        <li style="padding: 8px 0;">• Interface vs Class con UML</li>
+                        <li style="padding: 8px 0;">• Importancia del polimorfismo</li>
+                        <li style="padding: 8px 0;">• Ejemplo: Interface Animal</li>
+                    </ul>
+                </div>
+                <div class="comparison-card bad">
+                    <h2>⚡ Actividades prácticas:</h2>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li style="padding: 8px 0;">• Analizar diagramas UML</li>
+                        <li style="padding: 8px 0;">• Entender Interface Animal</li>
+                        <li style="padding: 8px 0;">• Comparar implementaciones</li>
+                        <li style="padding: 8px 0;">• Definir tu proyecto integrador</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: What is a Data Structure -->
+        <div class="slide">
+            <h1>¿Qué es una estructura de datos?</h1>
+            <div class="concept-diagram">
+                <div class="concept-element">
+                    <div class="concept-icon">📦</div>
+                    <div class="concept-title">Organización</div>
+                    <div class="concept-desc">Forma específica de organizar y almacenar datos</div>
+                </div>
+                <div class="concept-element">
+                    <div class="concept-icon">⚡</div>
+                    <div class="concept-title">Eficiencia</div>
+                    <div class="concept-desc">Permite acceder y modificar datos de manera eficiente</div>
+                </div>
+                <div class="concept-element">
+                    <div class="concept-icon">🔧</div>
+                    <div class="concept-title">Operaciones</div>
+                    <div class="concept-desc">Define qué operaciones se pueden realizar</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; background: #f8f9fa; padding: 30px; border-radius: 15px;">
+                <h2 style="color: #2c3e50; margin-bottom: 20px;">Analogía: Tu Armario</h2>
+                <p style="font-size: 1.2rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6;">
+                    Tu armario es una <strong>estructura para organizar ropa</strong>. Puedes colgar camisas, 
+                    doblar pantalones en cajones, o amontonar todo... ¡Cada forma de organizar te da diferentes 
+                    ventajas para encontrar lo que necesitas!
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 8: ADT vs Implementation -->
+        <div class="slide">
+            <h1>ADT vs Implementación con Java</h1>
+            <div class="comparison-grid">
+                <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h2>ADT = Interface en Java</h2>
+                    <h3>¿QUÉ hace?</h3>
+                    <ul style="list-style: none; margin-top: 20px;">
+                        <li style="padding: 5px 0;">• Define las operaciones (métodos)</li>
+                        <li style="padding: 5px 0;">• Especifica el comportamiento esperado</li>
+                        <li style="padding: 5px 0;">• NO dice CÓMO implementar</li>
+                    </ul>
+                    <div style="margin-top: 20px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>Ejemplo:</strong><br>
+                        <code>interface Lista { add(); remove(); get(); }</code>
+                    </div>
+                </div>
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h2>Implementación = Clase en Java</h2>
+                    <h3>¿CÓMO lo hace?</h3>
+                    <ul style="list-style: none; margin-top: 20px;">
+                        <li style="padding: 5px 0;">• Código específico (implements)</li>
+                        <li style="padding: 5px 0;">• Variables de instancia</li>
+                        <li style="padding: 5px 0;">• Algoritmos concretos</li>
+                    </ul>
+                    <div style="margin-top: 20px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        <strong>Ejemplo:</strong><br>
+                        <code>class ArrayList implements Lista</code>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 25px; border-radius: 15px; display: inline-block;">
+                    <h3>🎯 La magia de Java:</h3>
+                    <p style="margin: 10px 0;"><strong>Una interface</strong> puede tener <strong>múltiples implementaciones</strong></p>
+                    <p style="font-size: 0.9rem;">Lista puede ser ArrayList, LinkedList, Vector... ¡Todas diferentes por dentro!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Why Data Structures Matter -->
+        <div class="slide">
+            <h1>¿Por qué son importantes?</h1>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin: 40px 0;">
+                <div>
+                    <h2 style="color: #dc3545;">❌ Sin estructuras adecuadas:</h2>
+                    <div style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <ul style="list-style: none;">
+                            <li style="padding: 6px 0;">• Programas lentos</li>
+                            <li style="padding: 6px 0;">• Código difícil de mantener</li>
+                            <li style="padding: 6px 0;">• Uso excesivo de memoria</li>
+                            <li style="padding: 6px 0;">• Bugs difíciles de encontrar</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h2 style="color: #28a745;">✅ Con estructuras correctas:</h2>
+                    <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <ul style="list-style: none;">
+                            <li style="padding: 6px 0;">• Rendimiento óptimo</li>
+                            <li style="padding: 6px 0;">• Código elegante y claro</li>
+                            <li style="padding: 6px 0;">• Uso eficiente de recursos</li>
+                            <li style="padding: 6px 0;">• Fácil de extender</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px; background: #f8f9fa; padding: 30px; border-radius: 15px;">
+                <h2 style="color: #2c3e50;">💡 Ejemplo Real</h2>
+                <p style="font-size: 1.1rem; color: #666; margin: 15px 0;">
+                    <strong>Instagram:</strong> Buscar entre 1 billón de fotos en menos de 100ms<br>
+                    <strong>Netflix:</strong> Recomendar películas a 200M usuarios simultáneamente<br>
+                    <strong>WhatsApp:</strong> Entregar 65 billones de mensajes al día
+                </p>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; display: inline-block; margin-top: 15px;">
+                    <strong>¿Cómo es posible? ¡Estructuras de datos bien elegidas!</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Interface UML - Animal -->
+        <div class="slide">
+            <h1>ADT con UML: Interface Animal</h1>
+            <div style="margin: 40px 0; text-align: center;">
+                <h2>El ADT (Interface) define QUÉ debe hacer todo animal:</h2>
+                
+                <!-- UML Interface Diagram -->
+                <div style="background: white; border: 2px solid #667eea; padding: 30px; border-radius: 15px; margin: 40px auto; display: inline-block; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);">
+                    <div style="background: #667eea; color: white; padding: 10px; margin: -30px -30px 20px -30px; text-align: center; font-weight: bold; border-radius: 13px 13px 0 0;">
+                        &lt;&lt;interface&gt;&gt;<br>Animal
+                    </div>
+                    <div style="text-align: left; font-family: monospace; line-height: 1.8; color: #2c3e50;">
+                        + comer() : void<br>
+                        + dormir() : void<br>
+                        + hacerSonido() : void<br>
+                        + moverse() : void<br>
+                        + obtenerEspecie() : String
+                    </div>
+                </div>
+
+                <div style="margin-top: 40px; background: #f8f9fa; padding: 25px; border-radius: 12px; border-left: 4px solid #28a745;">
+                    <h3 style="color: #28a745; margin-bottom: 15px;">🎯 ¿Qué especifica esta interface?</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                        <div>
+                            <p><strong>Operaciones comunes:</strong></p>
+                            <ul style="margin-left: 20px; color: #666;">
+                                <li>Todo animal debe comer</li>
+                                <li>Todo animal debe dormir</li>
+                                <li>Todo animal hace algún sonido</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p><strong>Pero NO dice CÓMO:</strong></p>
+                            <ul style="margin-left: 20px; color: #666;">
+                                <li>¿Qué come cada animal?</li>
+                                <li>¿Cómo se mueve?</li>
+                                <li>¿Qué sonido hace?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: UML Implementations - Conejo y Gato -->
+        <div class="slide">
+            <h1>Implementaciones: Conejo y Gato</h1>
+            <div style="margin: 40px 0;">
+                <h2 style="text-align: center; margin-bottom: 30px;">Cada clase implementa el ADT de manera específica:</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                    <!-- UML Conejo Class -->
+                    <div style="background: white; border: 2px solid #28a745; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(40, 167, 69, 0.2);">
+                        <div style="background: #28a745; color: white; padding: 10px; margin: -25px -25px 20px -25px; text-align: center; font-weight: bold; border-radius: 13px 13px 0 0;">
+                            Conejo<br>
+                            <small>implements Animal</small>
+                        </div>
+                        <div style="text-align: left; font-family: monospace; line-height: 1.6; color: #2c3e50; font-size: 0.9rem;">
+                            <strong style="color: #28a745;">Atributos:</strong><br>
+                            - colorPelaje: String<br>
+                            - longitudOrejas: double<br><br>
+                            
+                            <strong style="color: #28a745;">Métodos del ADT:</strong><br>
+                            + comer(): "Como zanahorias"<br>
+                            + dormir(): "Duermo en madriguera"<br>
+                            + hacerSonido(): "No hago sonido"<br>
+                            + moverse(): "Salto"<br>
+                            + obtenerEspecie(): "Conejo"<br><br>
+                            
+                            <strong style="color: #28a745;">Métodos únicos:</strong><br>
+                            + cavar(): void<br>
+                            + moverOrejas(): void
+                        </div>
+                    </div>
+
+                    <!-- UML Gato Class -->
+                    <div style="background: white; border: 2px solid #e17055; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(225, 112, 85, 0.2);">
+                        <div style="background: #e17055; color: white; padding: 10px; margin: -25px -25px 20px -25px; text-align: center; font-weight: bold; border-radius: 13px 13px 0 0;">
+                            Gato<br>
+                            <small>implements Animal</small>
+                        </div>
+                        <div style="text-align: left; font-family: monospace; line-height: 1.6; color: #2c3e50; font-size: 0.9rem;">
+                            <strong style="color: #e17055;">Atributos:</strong><br>
+                            - raza: String<br>
+                            - vidas: int<br><br>
+                            
+                            <strong style="color: #e17055;">Métodos del ADT:</strong><br>
+                            + comer(): "Como pescado"<br>
+                            + dormir(): "Duermo 16 horas"<br>
+                            + hacerSonido(): "Miau"<br>
+                            + moverse(): "Camino sigilosamente"<br>
+                            + obtenerEspecie(): "Gato"<br><br>
+                            
+                            <strong style="color: #e17055;">Métodos únicos:</strong><br>
+                            + ronronear(): void<br>
+                            + trepar(): void<br>
+                            + cazarRaton(): boolean
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px;">
+                    <h3 style="color: white; margin-bottom: 15px;">🎯 ¡La magia del polimorfismo!</h3>
+                    <p style="margin: 0; font-size: 1.1rem;">
+                        <code style="background: rgba(255,255,255,0.2); padding: 5px; border-radius: 4px;">Animal miMascota = new Gato();</code><br>
+                        <code style="background: rgba(255,255,255,0.2); padding: 5px; border-radius: 4px;">miMascota.hacerSonido(); // "Miau"</code><br><br>
+                        <strong>La misma interface, comportamientos diferentes</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Hands-on Workshop -->
+        <div class="slide">
+            <div class="practice-section">
+                <div class="practice-title">¡Manos a la Obra!</div>
+                <div style="font-size: 1.5rem; margin-bottom: 30px;">🛠️ Es hora de implementar lo que aprendiste</div>
+                
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 40px; border-radius: 20px; margin: 40px 0;">
+                    <h2 style="color: white; margin-bottom: 30px;">Workshop: Implementación en Java</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: left;">
+                        <div>
+                            <h3 style="color: white; margin-bottom: 20px;">🎯 Lo que harás:</h3>
+                            <ul style="list-style: none; color: white; font-size: 1.1rem;">
+                                <li style="padding: 8px 0;">• Crear interface Animal</li>
+                                <li style="padding: 8px 0;">• Implementar clases Conejo y Gato</li>
+                                <li style="padding: 8px 0;">• Probar polimorfismo en acción</li>
+                                <li style="padding: 8px 0;">• Entender interfaces y @Override</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 style="color: white; margin-bottom: 20px;">🔧 Herramientas:</h3>
+                            <ul style="list-style: none; color: white; font-size: 1.1rem;">
+                                <li style="padding: 8px 0;">• Java JDK 8+</li>
+                                <li style="padding: 8px 0;">• IDE (IntelliJ, Eclipse, VS Code)</li>
+                                <li style="padding: 8px 0;">• Tu terminal o línea de comandos</li>
+                                <li style="padding: 8px 0;">• ¡Muchas ganas de aprender!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.3); padding: 25px; border-radius: 15px; font-size: 1.3rem; margin-top: 30px;">
+                    <strong>📂 Workshop disponible en:</strong><br>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px;">
+                        [Aquí irá tu link cuando lo compartas] 🔗
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Summary -->
+        <div class="slide">
+            <h1>Resumen de Hoy</h1>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <div>
+                    <h2>🧠 Conceptos Clave:</h2>
+                    <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <ul style="list-style: none;">
+                            <li style="padding: 6px 0;">• Interface define el ADT (QUÉ hacer)</li>
+                            <li style="padding: 6px 0;">• Class implementa el comportamiento (CÓMO hacerlo)</li>
+                            <li style="padding: 6px 0;">• Una interface puede tener múltiples implementaciones</li>
+                            <li style="padding: 6px 0;">• Polimorfismo permite flexibilidad</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h2>🎨 Lo que visualizaste:</h2>
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <ul style="list-style: none;">
+                            <li style="padding: 6px 0;">• UML para Interface Animal</li>
+                            <li style="padding: 6px 0;">• Implementaciones Conejo y Gato</li>
+                            <li style="padding: 6px 0;">• Separación clara de responsabilidades</li>
+                            <li style="padding: 6px 0;">• Base para entender estructuras de datos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; display: inline-block;">
+                    <h2 style="color: white; margin-bottom: 15px;">🎯 Tu Misión</h2>
+                    <p style="font-size: 1.2rem;">
+                        La próxima semana empezarás a construir estructuras que cambiarán cómo programas para siempre.
+                        <br><strong>¡Prepárate para el viaje! 🚀</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Next Steps -->
+        <div class="slide">
+            <h1>¿Qué viene después?</h1>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <div>
+                    <h2>📚 La próxima semana:</h2>
+                    <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <h3>Arrays - La Base de Todo</h3>
+                        <ul style="list-style: none; margin-top: 15px;">
+                            <li style="padding: 5px 0;">• ¿Qué es memoria contigua?</li>
+                            <li style="padding: 5px 0;">• Arrays en Java</li>
+                            <li style="padding: 5px 0;">• Operaciones básicas</li>
+                            <li style="padding: 5px 0;">• Proyecto: sistema de libros</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h2>🏠 Trabajo independiente:</h2>
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-top: 20px;">
+                        <ul style="list-style: none;">
+                            <li style="padding: 5px 0;">• Completar taller interface Animal en Java</li>
+                            <li style="padding: 5px 0;">• Crear Perro y Pájaro que implementen Animal</li>
+                            <li style="padding: 5px 0;">• Pensar qué proyecto quieres desarrollar</li>
+                            <li style="padding: 5px 0;">• Definir el problema que resolverás</li>
+                        </ul>
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <strong>Ideas de proyecto:</strong><br>
+                            Biblioteca, tienda online, sistema de reservas, red social, gestor de tareas...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+            slides[currentSlide].style.animation = 'fadeInUp 0.6s ease-out';
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Auto-animate elements when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.8s ease-out';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards and elements
+        document.querySelectorAll('.professor-card, .objective-item, .feature-card, .concept-element, .comparison-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
