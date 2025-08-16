@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrays Dinámicos - ArrayList</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 30px 0 20px 0;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .code-example .keyword {
+            color: #ffd700;
+        }
+
+        .code-example .string {
+            color: #90ee90;
+        }
+
+        .code-example .comment {
+            color: #87ceeb;
+            font-style: italic;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .comparison-card {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .comparison-card.problem {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+        }
+
+        .comparison-card.solution {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .workshop-section {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 25px;
+            margin: 40px 0;
+        }
+
+        .workshop-title {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .workshop-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .workshop-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .workshop-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .visual-array {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .array-cell {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .array-cell.empty {
+            background: #e9ecef;
+            color: #adb5bd;
+            border: 2px dashed #dee2e6;
+        }
+
+        .array-cell.highlight {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.5);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            margin: 30px 0;
+        }
+
+        .benchmark-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .benchmark-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .benchmark-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .benchmark-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.05);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes grow {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+                margin: 20px 0;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">◀ Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente ▶</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide">
+            <h1>ARRAYS DINÁMICOS - ARRAYLIST</h1>
+            <h2>Semana 3: Estructuras de Datos</h2>
+            <div class="subtitle">🚀 Arrays que crecen automáticamente</div>
+            <div class="slide-number">1 / 10</div>
+        </div>
+
+        <!-- Slide 2: El Problema -->
+        <div class="slide">
+            <h1>❌ El Problema del Array Fijo</h1>
+            <div class="code-example">
+<span class="keyword">public class</span> Biblioteca {
+    <span class="keyword">private</span> Libro[] catalogo = <span class="keyword">new</span> Libro[100];
+    <span class="keyword">private int</span> numLibros = 0;
+    
+    <span class="keyword">public void</span> agregarLibro(Libro libro) {
+        <span class="keyword">if</span> (numLibros >= 100) {
+            System.out.println(<span class="string">"¡Catálogo lleno!"</span>);  <span class="comment">// 😱</span>
+            <span class="keyword">return</span>;
+        }
+        catalogo[numLibros++] = libro;
+    }
+}
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%); color: white; padding: 30px; border-radius: 15px; display: inline-block;">
+                    <h2 style="color: white;">🤔 ¿Qué hacemos cuando llegue el libro 101?</h2>
+                </div>
+            </div>
+            
+            <div class="slide-number">2 / 10</div>
+        </div>
+
+        <!-- Slide 3: La Solución Conceptual -->
+        <div class="slide">
+            <h1>💡 La Solución: ArrayList</h1>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>Array Estático (Problema):</h3>
+                <div class="visual-array">
+                    <div class="array-cell">L1</div>
+                    <div class="array-cell">L2</div>
+                    <div class="array-cell">L3</div>
+                    <div class="array-cell">L4</div>
+                    <div class="array-cell">L5</div>
+                    <div class="array-cell empty">❌</div>
+                    <div class="array-cell empty">❌</div>
+                    <div class="array-cell empty">❌</div>
+                    <div class="array-cell empty">❌</div>
+                    <div class="array-cell empty">❌</div>
+                </div>
+                <p style="color: #e74c3c; font-weight: bold;">¡LLENO! No más espacio</p>
+            </div>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>ArrayList (Solución):</h3>
+                <div class="visual-array">
+                    <div class="array-cell">L1</div>
+                    <div class="array-cell">L2</div>
+                    <div class="array-cell">L3</div>
+                    <div class="array-cell">L4</div>
+                    <div class="array-cell">L5</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                </div>
+                <p style="color: #27ae60; font-weight: bold;">↓ Cuando se llena... ¡CRECE AUTOMÁTICAMENTE! ↓</p>
+                <div class="visual-array">
+                    <div class="array-cell">L1</div>
+                    <div class="array-cell">L2</div>
+                    <div class="array-cell">L3</div>
+                    <div class="array-cell">L4</div>
+                    <div class="array-cell">L5</div>
+                    <div class="array-cell highlight">L6</div>
+                    <div class="array-cell highlight">L7</div>
+                    <div class="array-cell highlight">L8</div>
+                    <div class="array-cell highlight">L9</div>
+                    <div class="array-cell highlight">L10</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                    <div class="array-cell empty">...</div>
+                </div>
+            </div>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">Componentes clave:</h3>
+                <ul style="list-style: none; color: #495057;">
+                    <li><strong>📦 Array interno:</strong> Almacena los elementos</li>
+                    <li><strong>📊 Size:</strong> Cuántos elementos tenemos realmente</li>
+                    <li><strong>💾 Capacity:</strong> Cuánto espacio total hay disponible</li>
+                </ul>
+            </div>
+            
+            <div class="slide-number">3 / 10</div>
+        </div>
+
+        <!-- Slide 4: Implementación en Vivo -->
+        <div class="slide">
+            <div class="workshop-section">
+                <div class="workshop-title">🔨 IMPLEMENTACIÓN EN VIVO</div>
+                <div class="workshop-subtitle">Live Coding Session</div>
+                
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 40px; border-radius: 20px; margin: 40px 0;">
+                    <h2 style="color: white; margin-bottom: 30px;">📝 Implementaremos paso a paso:</h2>
+                    
+                    <div class="workshop-info">
+                        <div class="workshop-item">
+                            <h3>1️⃣ Estructura básica</h3>
+                            <p>Clase y variables</p>
+                        </div>
+                        <div class="workshop-item">
+                            <h3>2️⃣ Constructor</h3>
+                            <p>Inicialización</p>
+                        </div>
+                        <div class="workshop-item">
+                            <h3>3️⃣ Método add()</h3>
+                            <p>Agregar elementos</p>
+                        </div>
+                        <div class="workshop-item">
+                            <h3>4️⃣ Crecimiento</h3>
+                            <p>Redimensionar array</p>
+                        </div>
+                        <div class="workshop-item">
+                            <h3>5️⃣ Método get()</h3>
+                            <p>Obtener elementos</p>
+                        </div>
+                        <div class="workshop-item">
+                            <h3>6️⃣ Método remove()</h3>
+                            <p>Eliminar elementos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.3); padding: 25px; border-radius: 15px; font-size: 1.3rem;">
+                    <strong>¡Abramos el IDE y programemos juntos!</strong>
+                </div>
+            </div>
+            <div class="slide-number">4 / 10</div>
+        </div>
+
+        <!-- Slide 5: Taller -->
+        <div class="slide">
+            <div class="workshop-section">
+                <div class="workshop-title">💻 TALLER</div>
+                <div class="workshop-subtitle">Implementación de Métodos Adicionales</div>
+                
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 60px; border-radius: 20px; margin: 40px 0;">
+                    <div style="font-size: 2.5rem;">📝 5 métodos por implementar</div>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.3); padding: 25px; border-radius: 15px; margin-top: 30px;">
+                    <h3 style="color: white; margin-bottom: 15px;">Métodos a implementar:</h3>
+                    <div style="font-size: 1.2rem;">
+                        1. contains() • 2. indexOf() • 3. clear() • 4. set() • 5. add(index, elemento)
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">5 / 10</div>
+        </div>
+
+        <!-- Slide 6: Pruebas de Rendimiento -->
+        <div class="slide">
+            <h1>⚡ Pruebas de Rendimiento</h1>
+            <h2 style="text-align: center; color: #667eea;">Comparemos Arrays vs ArrayList</h2>
+            
+            <div class="code-example">
+<span class="keyword">public class</span> Benchmark {
+    <span class="keyword">public static void</span> testRendimiento() {
+        <span class="keyword">final int</span> ELEMENTOS = 100_000;
+        
+        <span class="comment">// Test 1: Array Fijo</span>
+        <span class="comment">// Test 2: Nuestro ArrayList</span>
+        <span class="comment">// Test 3: ArrayList de Java</span>
+        
+        <span class="comment">// Mediremos:</span>
+        <span class="comment">// - Tiempo de inserción</span>
+        <span class="comment">// - Tiempo de acceso</span>
+        <span class="comment">// - Tiempo de eliminación</span>
+        <span class="comment">// - Uso de memoria</span>
+    }
+}
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px; display: inline-block;">
+                    <h3 style="color: white;">📊 Ejecutaremos las pruebas juntos</h3>
+                    <p style="margin-top: 10px;">Veremos los resultados en tiempo real</p>
+                </div>
+            </div>
+            
+            <div class="slide-number">6 / 10</div>
+        </div>
+
+        <!-- Slide 7: Aplicación al Proyecto -->
+        <div class="slide">
+            <h1>📚 Aplicación al Proyecto</h1>
+            <h2 style="text-align: center; color: #667eea;">Migrando la Biblioteca a ArrayList</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card problem">
+                    <h2>❌ ANTES (Semana 2)</h2>
+                    <div class="code-example" style="text-align: left; margin-top: 20px;">
+<span class="keyword">public class</span> BibliotecaV1 {
+    <span class="keyword">private</span> Libro[] catalogo = 
+        <span class="keyword">new</span> Libro[100];
+    <span class="keyword">private int</span> numLibros = 0;
+}
+                    </div>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li>• Límite fijo de 100 libros</li>
+                        <li>• Contador manual</li>
+                        <li>• Gestión compleja</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-card solution">
+                    <h2>✅ AHORA (Semana 3)</h2>
+                    <div class="code-example" style="text-align: left; margin-top: 20px;">
+<span class="keyword">public class</span> BibliotecaV2 {
+    <span class="keyword">private</span> MiArrayList&lt;Libro&gt; 
+        catalogo = <span class="keyword">new</span> MiArrayList&lt;&gt;();
+}
+                    </div>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li>• Sin límites fijos</li>
+                        <li>• Sin contador manual</li>
+                        <li>• API rica y simple</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="slide-number">7 / 10</div>
+        </div>
+
+        <!-- Slide 8: Análisis de Complejidad -->
+        <div class="slide">
+            <h1>📊 Análisis de Complejidad</h1>
+            <h2 style="text-align: center; color: #667eea;">Big O de las Operaciones</h2>
+            
+            <table class="benchmark-table">
+                <thead>
+                    <tr>
+                        <th>Operación</th>
+                        <th>ArrayList</th>
+                        <th>Array Estático</th>
+                        <th>¿Por qué?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>add (final)</strong></td>
+                        <td style="color: #27ae60;">O(1)*</td>
+                        <td style="color: #e74c3c;">O(n)</td>
+                        <td>*Amortizado - ocasionalmente O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>get(index)</strong></td>
+                        <td style="color: #27ae60;">O(1)</td>
+                        <td style="color: #27ae60;">O(1)</td>
+                        <td>Acceso directo por índice</td>
+                    </tr>
+                    <tr>
+                        <td><strong>remove(index)</strong></td>
+                        <td style="color: #f39c12;">O(n)</td>
+                        <td style="color: #f39c12;">O(n)</td>
+                        <td>Debe desplazar elementos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>contains</strong></td>
+                        <td style="color: #f39c12;">O(n)</td>
+                        <td style="color: #f39c12;">O(n)</td>
+                        <td>Búsqueda lineal</td>
+                    </tr>
+                    <tr>
+                        <td><strong>size()</strong></td>
+                        <td style="color: #27ae60;">O(1)</td>
+                        <td style="color: #27ae60;">O(1)</td>
+                        <td>Variable guardada</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="concept-box" style="margin-top: 40px;">
+                <h3 style="color: #2c3e50;">💡 Concepto clave: Complejidad Amortizada</h3>
+                <p style="color: #495057;">
+                    La mayoría de las veces add() es O(1), pero ocasionalmente cuando el array debe crecer es O(n).
+                    En promedio, sigue siendo O(1) - esto se llama <strong>complejidad amortizada</strong>.
+                </p>
+            </div>
+            
+            <div class="slide-number">8 / 10</div>
+        </div>
+
+        <!-- Slide 9: Casos de Uso -->
+        <div class="slide">
+            <h1>🎯 ¿Cuándo usar cada estructura?</h1>
+            
+            <div class="feature-grid">
+                <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <div class="feature-icon">📊</div>
+                    <h3 style="color: white;">Array Estático</h3>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li>✅ Tamaño fijo conocido</li>
+                        <li>✅ Máximo rendimiento</li>
+                        <li>✅ Tipos primitivos (int[], double[])</li>
+                        <li>✅ Memoria crítica</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <div class="feature-icon">📈</div>
+                    <h3 style="color: white;">ArrayList</h3>
+                    <ul style="list-style: none; text-align: left; margin-top: 20px;">
+                        <li>✅ Tamaño variable</li>
+                        <li>✅ Muchas inserciones/eliminaciones</li>
+                        <li>✅ API rica (contains, indexOf)</li>
+                        <li>✅ No sabes cuántos elementos tendrás</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <div class="concept-box">
+                    <h3 style="color: #2c3e50;">🔑 Regla de oro:</h3>
+                    <p style="font-size: 1.2rem; color: #495057;">
+                        Si conoces el tamaño exacto y no cambiará → <strong>Array</strong><br>
+                        Si el tamaño puede variar → <strong>ArrayList</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-number">9 / 10</div>
+        </div>
+
+        <!-- Slide 10: Trabajo Independiente y Próxima Clase -->
+        <div class="slide">
+            <h1>📝 Trabajo Independiente</h1>
+            <h3 style="text-align: center; color: #667eea;">Para completar en casa (4 horas)</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">📝 Implementación</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>1. Completar TODOS los métodos</li>
+                        <li>2. Manejo de excepciones</li>
+                        <li>3. Implementar toString()</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">🧪 Testing</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>1. Clase TestMiArrayList</li>
+                        <li>2. Mínimo 15 casos de prueba</li>
+                        <li>3. Incluir casos límite</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">📚 Proyecto Biblioteca</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>1. Migrar a MiArrayList</li>
+                        <li>2. Búsqueda por título/autor</li>
+                        <li>3. Ordenamiento básico</li>
+                        <li>4. Historial de operaciones</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">📖 Documentación</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>1. JavaDoc completo</li>
+                        <li>2. README con ejemplos</li>
+                        <li>3. Análisis de complejidad</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="background: linear-gradient(135deg, #e17055 0%, #fdcb6e 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h2 style="color: white;">📅 PRÓXIMA CLASE: Listas Enlazadas</h2>
+                    <h3 style="color: white; margin: 20px 0;">Problema actual de ArrayList:</h3>
+                    <div class="code-example" style="text-align: left;">
+<span class="comment">// Insertar al inicio: O(n) - ¡Muy lento!</span>
+lista.add(0, elemento);  <span class="comment">// Mueve TODOS los elementos</span>
+
+<span class="comment">// Eliminar del inicio: O(n) - ¡Muy lento!</span>
+lista.remove(0);  <span class="comment">// Mueve TODOS los elementos</span>
+                    </div>
+                    <h3 style="color: white; margin-top: 20px;">Solución: Listas Enlazadas</h3>
+                    <div class="code-example" style="text-align: left;">
+<span class="keyword">class</span> Nodo {
+    T dato;
+    Nodo siguiente;  <span class="comment">// ¡La magia está aquí!</span>
+}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-number">10 / 10</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+            slides[currentSlide].style.animation = 'fadeInUp 0.6s ease-out';
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Animate array cells on hover
+        document.querySelectorAll('.array-cell').forEach(cell => {
+            cell.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('empty')) {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = '0 5px 15px rgba(102, 126, 234, 0.5)';
+                }
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
