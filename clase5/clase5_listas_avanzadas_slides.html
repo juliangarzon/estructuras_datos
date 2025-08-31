@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas Enlazadas Avanzadas + Primera Entrega</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px;
+            margin: 40px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .title-slide .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 30px 0 20px 0;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 30px;
+            border-radius: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 25px 0;
+            overflow-x: auto;
+            font-size: 1rem;
+            line-height: 1.8;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-example .keyword {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .code-example .string {
+            color: #98d982;
+        }
+
+        .code-example .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .comparison-card {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .comparison-card.problem {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+        }
+
+        .comparison-card.solution {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .comparison-card.linkedlist {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+        }
+
+        .comparison-card.doubly {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            margin: 30px 0;
+        }
+
+        .visual-linked-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 80px;
+            text-align: center;
+            position: relative;
+            font-weight: bold;
+        }
+
+        .doubly-node {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 100px;
+            text-align: center;
+            position: relative;
+            font-weight: bold;
+        }
+
+        .node-data {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .node-pointer {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #667eea;
+            animation: pulse 2s infinite;
+        }
+
+        .vs-section {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .vs-divider {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .urgent-banner {
+            background: linear-gradient(135deg, #e17055 0%, #fdcb6e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(225, 112, 85, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .deliverable-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .evaluation-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .evaluation-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .evaluation-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+                margin: 20px 0;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .comparison-grid, .vs-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">◀ Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente ▶</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide title-slide">
+            <h1>LISTAS ENLAZADAS AVANZADAS</h1>
+            <h2>Semana 5: Estructuras de Datos</h2>
+            <div class="subtitle">🔗 Expandiendo el concepto + 📋 Primera Entrega</div>
+            <div style="margin-top: 40px;">
+                <h3 style="color: white; opacity: 0.9; font-size: 1.4rem; animation: fadeInUp 1s ease-out 0.9s both;">🎯 Agenda de hoy:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; animation: fadeInUp 1s ease-out 1.2s both;">
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📝</div>
+                        <p>Repaso rápido clase anterior</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🔄</div>
+                        <p>Listas doblemente enlazadas</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🔁</div>
+                        <p>Listas circulares</p>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📋</div>
+                        <p>Primera Entrega del proyecto</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-number">1 / 12</div>
+        </div>
+
+        <!-- Slide 2: Repaso rápido -->
+        <div class="slide">
+            <h1>📝 ¿Qué vimos la semana pasada?</h1>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px; display: inline-block; margin-bottom: 30px;">
+                    <h3 style="color: white;">✅ Listas Simplemente Enlazadas</h3>
+                    <p style="margin: 15px 0;">Nodos conectados con referencias</p>
+                    <p>Inserción O(1) al inicio vs ArrayList O(n)</p>
+                </div>
+            </div>
+
+            <div class="visual-linked-list">
+                <div style="background: #e74c3c; color: white; padding: 10px; border-radius: 5px; font-size: 0.9rem;">
+                    HEAD
+                </div>
+                <div class="arrow">↓</div>
+                <div class="node">
+                    <div class="node-data">"A"</div>
+                    <div class="node-pointer">next →</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="node">
+                    <div class="node-data">"B"</div>
+                    <div class="node-pointer">next →</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="node">
+                    <div class="node-data">"C"</div>
+                    <div class="node-pointer">next →</div>
+                </div>
+                <div class="arrow">→</div>
+                <div style="background: #95a5a6; color: white; padding: 15px; border-radius: 10px;">
+                    NULL
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="keyword">class</span> Nodo&lt;T&gt; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;T dato;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Nodo&lt;T&gt; siguiente;<br>
+}<br>
+<br>
+<span class="comment">// Inserción al inicio - O(1)</span><br>
+nuevoNodo.siguiente = head;<br>
+head = nuevoNodo;
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <div style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%); color: white; padding: 25px; border-radius: 15px; display: inline-block;">
+                    <h3 style="color: white;">🤔 Pero había un problema...</h3>
+                    <div class="code-example" style="margin-top: 15px; text-align: left;">
+<span class="comment">// ¿Cómo eliminar el ÚLTIMO nodo eficientemente?</span><br>
+<span class="keyword">public void</span> removeLast() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Debo recorrer TODA la lista - O(n)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>(actual.siguiente.siguiente != <span class="keyword">null</span>)...<br>
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">2 / 12</div>
+        </div>
+
+        <!-- Slide 3: Por qué doblemente enlazadas -->
+        <div class="slide">
+            <h1>🔄 ¿Por qué Doblemente Enlazadas?</h1>
+            <h2 style="text-align: center; color: #667eea;">Solucionando las limitaciones</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card problem">
+                    <h3 style="color: white;">⚠️ Problema con Lista Simple</h3>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="color: white;">❌ Solo navegación hacia adelante</h4>
+                        <h4 style="color: white;">❌ Eliminar nodo requiere el anterior</h4>
+                        <h4 style="color: white;">❌ No hay acceso eficiente al final</h4>
+                    </div>
+                    <div class="code-example" style="text-align: left;">
+<span class="comment">// Para eliminar último nodo</span><br>
+<span class="keyword">while</span>(actual.siguiente.siguiente != <span class="keyword">null</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;actual = actual.siguiente; <span class="comment">// O(n)</span><br>
+}
+                    </div>
+                </div>
+                
+                <div class="comparison-card solution">
+                    <h3 style="color: white;">✅ Solución: Lista Doble</h3>
+                    <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="color: white;">✅ Navegación bidireccional</h4>
+                        <h4 style="color: white;">✅ Eliminación más eficiente</h4>
+                        <h4 style="color: white;">✅ Acceso rápido desde ambos extremos</h4>
+                    </div>
+                    <div class="code-example" style="text-align: left;">
+<span class="comment">// Con referencia al nodo anterior</span><br>
+nodoActual.prev.next = nodoActual.next;<br>
+nodoActual.next.prev = nodoActual.prev; <span class="comment">// O(1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 20px;">
+                    <h3 style="color: white; font-size: 1.8rem;">💡 Idea clave: Cada nodo conoce a su vecino anterior</h3>
+                    <p style="font-size: 1.2rem; margin: 15px 0;">📦 DATO + 🔗 NEXT + ⬅️ PREV</p>
+                </div>
+            </div>
+
+            <div class="slide-number">3 / 12</div>
+        </div>
+
+        <!-- Slide 4: Estructura doblemente enlazada -->
+        <div class="slide">
+            <h1>🏗️ Estructura Doblemente Enlazada</h1>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>Anatomía de una Lista Doblemente Enlazada</h3>
+                <div class="visual-linked-list">
+                    <div style="background: #95a5a6; color: white; padding: 10px; border-radius: 5px;">
+                        NULL
+                    </div>
+                    <div class="arrow">←</div>
+                    <div class="doubly-node">
+                        <div class="node-data">"A"</div>
+                        <div style="font-size: 0.8rem;">← prev | next →</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #a29bfe;">⇄</div>
+                    <div class="doubly-node">
+                        <div class="node-data">"B"</div>
+                        <div style="font-size: 0.8rem;">← prev | next →</div>
+                    </div>
+                    <div style="font-size: 1.5rem; color: #a29bfe;">⇄</div>
+                    <div class="doubly-node">
+                        <div class="node-data">"C"</div>
+                        <div style="font-size: 0.8rem;">← prev | next →</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div style="background: #95a5a6; color: white; padding: 10px; border-radius: 5px;">
+                        NULL
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="keyword">public class</span> DoublyNode&lt;T&gt; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;T data;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DoublyNode&lt;T&gt; next;     <span class="comment">// Referencia al siguiente</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;DoublyNode&lt;T&gt; prev;     <span class="comment">// ¡Nueva referencia al anterior!</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span> DoublyNode(T data) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.data = data;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.next = <span class="keyword">null</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.prev = <span class="keyword">null</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+<br>
+<span class="keyword">public class</span> DoublyLinkedList&lt;T&gt; {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DoublyNode&lt;T&gt; head;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DoublyNode&lt;T&gt; tail;     <span class="comment">// ¡Referencia al último también!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> size;<br>
+}
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🔑 Ventajas clave:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #a29bfe;">🏃‍♂️ Navegación bidireccional</h4>
+                        <p style="color: #495057;">Puedo ir hacia adelante y hacia atrás</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #a29bfe;">🎯 Eliminación eficiente</h4>
+                        <p style="color: #495057;">Con referencia al nodo, eliminación O(1)</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #a29bfe;">📍 Acceso a ambos extremos</h4>
+                        <p style="color: #495057;">HEAD para el inicio, TAIL para el final</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #a29bfe;">🔧 Operaciones más flexibles</h4>
+                        <p style="color: #495057;">Inserción y eliminación en cualquier punto</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">4 / 12</div>
+        </div>
+
+        <!-- Slide 5: Cuándo usar cada una -->
+        <div class="slide">
+            <h1>🎯 ¿Cuándo usar cada una?</h1>
+            <h2 style="text-align: center; color: #667eea;">Guía de decisión</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card linkedlist">
+                    <h2 style="color: white;">🔗 USA SIMPLE CUANDO:</h2>
+                    <ul class="feature-list" style="text-align: left; margin-top: 20px;">
+                        <li>➡️ <strong>Solo navegación hacia adelante</strong><br>
+                            Recorridos secuenciales únicos</li>
+                        <li>💾 <strong>Memoria limitada</strong><br>
+                            Cada byte cuenta</li>
+                        <li>⚡ <strong>Operaciones simples</strong><br>
+                            Insert/delete principalmente al inicio</li>
+                        <li>🏗️ <strong>Implementación básica</strong><br>
+                            Stack, Queue simple</li>
+                        <li>📚 <strong>Aprendizaje</strong><br>
+                            Entender el concepto fundamental</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-card doubly">
+                    <h2 style="color: white;">🔄 USA DOBLE CUANDO:</h2>
+                    <ul class="feature-list" style="text-align: left; margin-top: 20px;">
+                        <li>⬅️➡️ <strong>Navegación bidireccional</strong><br>
+                            Necesito ir y venir frecuentemente</li>
+                        <li>🗑️ <strong>Eliminaciones frecuentes</strong><br>
+                            Con referencia directa al nodo</li>
+                        <li>📝 <strong>Editor de texto</strong><br>
+                            Cursor que se mueve en ambas direcciones</li>
+                        <li>🌐 <strong>Navegador web</strong><br>
+                            Historial con back/forward</li>
+                        <li>🎵 <strong>Playlist música</strong><br>
+                            Anterior/siguiente con facilidad</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🏆 Casos de uso específicos:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #00b894;">🔗 Lista Simple perfecta para:</h4>
+                        <ul style="color: #495057;">
+                            <li>• Stack (LIFO) - solo importa el tope</li>
+                            <li>• Cola simple (FIFO) básica</li>
+                            <li>• Lista de tareas pendientes</li>
+                            <li>• Procesamiento secuencial de datos</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #a29bfe;">🔄 Lista Doble perfecta para:</h4>
+                        <ul style="color: #495057;">
+                            <li>• Deque (Double-ended queue)</li>
+                            <li>• Cache con LRU (Least Recently Used)</li>
+                            <li>• Undo/Redo en aplicaciones</li>
+                            <li>• Navegación en interfaces de usuario</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">5 / 12</div>
+        </div>
+
+        <!-- Slide 6: Listas Circulares -->
+        <div class="slide">
+            <h1>🔁 Listas Circulares</h1>
+            <h2 style="text-align: center; color: #667eea;">Cerrando el círculo</h2>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 20px;">
+                    <h3 style="color: white; font-size: 1.8rem;">💡 Idea: El último nodo apunta al primero</h3>
+                    <p style="font-size: 1.2rem; margin: 15px 0;">No hay "NULL" al final - es un círculo infinito</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <h3>Lista Circular Simple</h3>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin: 30px 0; flex-wrap: wrap;">
+                    <div class="node">
+                        <div class="node-data">"A"</div>
+                        <div class="node-pointer">next →</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node">
+                        <div class="node-data">"B"</div>
+                        <div class="node-pointer">next →</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node">
+                        <div class="node-data">"C"</div>
+                        <div class="node-pointer">next →</div>
+                    </div>
+                    <div style="font-size: 3rem; color: #667eea; transform: rotate(45deg);">⤴</div>
+                </div>
+                <div style="color: #667eea; font-weight: bold; font-size: 1.2rem;">C.next apunta de vuelta a A</div>
+            </div>
+
+            <div class="code-example">
+<span class="keyword">public void</span> add(T data) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node&lt;T&gt; newNode = <span class="keyword">new</span> Node&lt;&gt;(data);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>(head == <span class="keyword">null</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head = newNode;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newNode.next = head;  <span class="comment">// ¡Apunta a sí mismo!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;} <span class="keyword">else</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Encontrar el último nodo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Node current = head;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span>(current.next != head) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current = current.next;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.next = newNode;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newNode.next = head;  <span class="comment">// ¡Cierra el círculo!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+            </div>
+
+            <div class="slide-number">6 / 12</div>
+        </div>
+
+        <!-- Slide 7: Aplicaciones listas circulares -->
+        <div class="slide">
+            <h1>🎯 Aplicaciones Listas Circulares</h1>
+            
+            <div class="comparison-grid">
+                <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">🎮 Round Robin</h3>
+                    <div class="code-example" style="margin: 15px 0; text-align: left;">
+<span class="comment">// Jugadores: Ana → Bob → Carlos → Ana</span><br>
+current = current.next;  <span class="comment">// Siguiente turno</span>
+                    </div>
+                    <p>Perfecto para turnos, CPU scheduling</p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">🎵 Playlist Música</h3>
+                    <div class="code-example" style="margin: 15px 0; text-align: left;">
+<span class="keyword">while</span>(<span class="keyword">true</span>) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reproducir(current.cancion);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;current = current.next; <span class="comment">// Infinito</span><br>
+}
+                    </div>
+                    <p>Repetir automáticamente</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">⚠️ CUIDADO: Loops Infinitos</h3>
+                <div class="code-example">
+<span class="comment">// ❌ PELIGRO - Loop infinito</span><br>
+Node current = head;<br>
+<span class="keyword">while</span>(current != <span class="keyword">null</span>) {  <span class="comment">// ¡Nunca será null!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;current = current.next;<br>
+}<br>
+<br>
+<span class="comment">// ✅ CORRECTO - Detectar ciclo</span><br>
+Node current = head;<br>
+<span class="keyword">do</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// procesar nodo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;current = current.next;<br>
+} <span class="keyword">while</span>(current != head);
+                </div>
+            </div>
+
+            <div class="slide-number">7 / 12</div>
+        </div>
+
+        <!-- Slide 8: Transición importante -->
+        <div class="slide">
+            <h1>🚀 Momento de Transición</h1>
+            <h2 style="text-align: center; color: #667eea;">De implementar a usar</h2>
+            
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border-radius: 25px;">
+                    <h3 style="color: white; font-size: 2rem; margin-bottom: 30px;">🎓 ¡Ya entiendes los fundamentos!</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 30px 0;">
+                        <div style="background: rgba(255, 255, 255, 0.2); padding: 25px; border-radius: 15px;">
+                            <h4 style="color: white; margin-bottom: 15px;">✅ LO QUE YA SABES:</h4>
+                            <ul style="list-style: none; text-align: left;">
+                                <li>🧠 Cómo funcionan internamente</li>
+                                <li>🔗 Memoria contigua vs dispersa</li>
+                                <li>⚡ Por qué ArrayList O(n) vs LinkedList O(1)</li>
+                                <li>🔄 Cuándo usar simple vs doble vs circular</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.2); padding: 25px; border-radius: 15px;">
+                            <h4 style="color: white; margin-bottom: 15px;">🔄 CAMBIO DE ENFOQUE:</h4>
+                            <ul style="list-style: none; text-align: left;">
+                                <li>🛑 MENOS implementar desde cero</li>
+                                <li>📚 MÁS usar Collections de Java</li>
+                                <li>🎯 ENFOQUE en cuándo usar cada una</li>
+                                <li>🚀 APLICAR para resolver problemas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="comment">// De aquí en adelante usaremos:</span><br>
+<span class="keyword">import</span> java.util.LinkedList;<br>
+<span class="keyword">import</span> java.util.ArrayList;<br>
+<br>
+LinkedList&lt;String&gt; lista = <span class="keyword">new</span> LinkedList&lt;&gt;();<br>
+lista.addFirst(<span class="string">"elemento"</span>);  <span class="comment">// O(1) - ¡Ya sabes por qué!</span>
+            </div>
+
+            <div class="slide-number">8 / 12</div>
+        </div>
+
+        <!-- Slide 9: Primera entrega -->
+        <div class="slide">
+            <div class="urgent-banner">
+                <h1 style="color: white; font-size: 3rem; margin-bottom: 20px;">📋 PRIMERA ENTREGA</h1>
+                <h2 style="color: white; font-size: 1.8rem;">Fecha límite: Final de esta semana</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <div class="deliverable-box">
+                    <h3 style="color: white; margin-bottom: 20px;">📦 QUÉ ENTREGAR</h3>
+                    <ul style="list-style: none;">
+                        <li>✅ <strong>Módulo 1:</strong> Gestión de Libros completo</li>
+                        <li>✅ <strong>Interfaz:</strong> Sistema de menús navegables</li>
+                        <li>✅ <strong>Implementaciones:</strong> ArrayList y LinkedList propias</li>
+                        <li>✅ <strong>Documentación:</strong> Manual básico</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 25px; border-radius: 15px;">
+                    <h3 style="color: white; margin-bottom: 20px;">🎯 FUNCIONALIDADES</h3>
+                    <ul style="list-style: none;">
+                        <li>📚 <strong>CRUD de libros</strong></li>
+                        <li>🔍 <strong>Búsquedas:</strong> título, autor, ISBN</li>
+                        <li>🏷️ <strong>Categorías:</strong> por géneros</li>
+                        <li>📊 <strong>Estado:</strong> disponible/prestado</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="slide-number">9 / 12</div>
+        </div>
+
+        <!-- Slide 10: Estructuras requeridas -->
+        <div class="slide">
+            <h1>🔧 Estructuras que DEBES Usar</h1>
+            
+            <div class="code-example">
+<span class="comment">// En tu clase principal del sistema:</span><br>
+<span class="keyword">public class</span> SistemaBiblioteca {<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// REQUERIDO: ArrayList de Java para el catálogo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> ArrayList&lt;Libro&gt; catalogo;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// REQUERIDO: LinkedList de Java para historial</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> LinkedList&lt;String&gt; historialOperaciones;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public void</span> agregarLibro(Libro libro) { }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span> ArrayList&lt;Libro&gt; buscarPorTitulo(String titulo) { }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public void</span> eliminarLibro(String isbn) { }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public void</span> listarTodosLosLibros() { }<br>
+}
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">📋 Funcionalidades Mínimas Requeridas:</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #667eea;">📚 Gestión de Libros</h4>
+                        <ul style="color: #495057;">
+                            <li>• Agregar nuevo libro</li>
+                            <li>• Buscar libro (título/autor/ISBN)</li>
+                            <li>• Listar todos los libros</li>
+                            <li>• Eliminar libro</li>
+                            <li>• Categorizar por géneros</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea;">🖥️ Interfaz Terminal</h4>
+                        <ul style="color: #495057;">
+                            <li>• Menú principal navegable</li>
+                            <li>• Submenús organizados</li>
+                            <li>• Validación de entradas</li>
+                            <li>• Mensajes informativos claros</li>
+                            <li>• Opción de salir</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white; font-size: 1.5rem;">💡 ¿Por qué estas estructuras?</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                        <div>
+                            <strong>ArrayList para catálogo:</strong><br>
+                            Acceso directo por índice para búsquedas
+                        </div>
+                        <div>
+                            <strong>LinkedList para historial:</strong><br>
+                            Inserción O(1) al inicio para operaciones recientes
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">10 / 12</div>
+        </div>
+
+        <!-- Slide 11: Criterios evaluación -->
+        <div class="slide">
+            <h1>📊 Criterios de Evaluación</h1>
+            
+            <table class="evaluation-table">
+                <thead>
+                    <tr>
+                        <th>Criterio</th>
+                        <th>Peso</th>
+                        <th>Qué se evalúa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Funcionalidad del Módulo 1</strong></td>
+                        <td>40%</td>
+                        <td>CRUD completo, búsquedas funcionando, categorización</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apropiación de Conceptos</strong></td>
+                        <td>30%</td>
+                        <td>Comprensión de cuándo y por qué usar cada estructura</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Interfaz de Terminal</strong></td>
+                        <td>20%</td>
+                        <td>Menú navegable, validación de entradas, experiencia de usuario</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calidad Técnica</strong></td>
+                        <td>10%</td>
+                        <td>Código limpio, manejo de excepciones</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🧠 Conceptos a Evaluar:</h3>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h4 style="color: white; margin-bottom: 15px;">📚 Arreglos y Listas - Dominio Conceptual</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                        <div>
+                            <h5 style="color: white;">🔍 USO</h5>
+                            <ul style="list-style: none; font-size: 0.9rem;">
+                                <li>• ¿Para qué sirve cada estructura?</li>
+                                <li>• ¿Qué problemas resuelven?</li>
+                                <li>• ¿Cuáles son sus limitaciones?</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: white;">⏰ CUÁNDO SE USAN</h5>
+                            <ul style="list-style: none; font-size: 0.9rem;">
+                                <li>• Escenarios ideales para ArrayList</li>
+                                <li>• Escenarios ideales para LinkedList</li>
+                                <li>• Casos donde NO usarías cada una</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: white;">🛠️ CÓMO SE USAN</h5>
+                            <ul style="list-style: none; font-size: 0.9rem;">
+                                <li>• Operaciones principales de cada una</li>
+                                <li>• Sintaxis correcta en Java</li>
+                                <li>• Patrones de implementación</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: white;">⚖️ CRITERIOS DE SELECCIÓN</h5>
+                            <ul style="list-style: none; font-size: 0.9rem;">
+                                <li>• Análisis de complejidad O(n)</li>
+                                <li>• Consideraciones de memoria</li>
+                                <li>• Tipo de operaciones frecuentes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 40px 0;">
+                <div style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">✅ Para obtener nota máxima</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>🔧 Todas las funcionalidades operativas</li>
+                        <li>🧠 Demuestra comprensión profunda de conceptos</li>
+                        <li>📱 Interfaz intuitiva y profesional</li>
+                        <li>⚡ Justifica elección de estructuras</li>
+                        <li>📝 Código bien documentado</li>
+                    </ul>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%); color: white; padding: 30px; border-radius: 15px;">
+                    <h3 style="color: white;">❌ Errores que evitar</h3>
+                    <ul style="list-style: none; margin-top: 15px;">
+                        <li>🚫 Usar estructuras incorrectas para el caso</li>
+                        <li>💥 No saber explicar por qué eligió cada una</li>
+                        <li>⚠️ Confundir cuándo usar ArrayList vs LinkedList</li>
+                        <li>🔍 No entender complejidad de operaciones</li>
+                        <li>📋 Falta de documentación</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="slide-number">11 / 12</div>
+        </div>
+
+        <!-- Slide 12: Próxima semana -->
+        <div class="slide title-slide">
+            <h1 style="font-size: 2.5rem;">¡Excelente trabajo hoy!</h1>
+            <h2 style="font-size: 1.5rem; margin-top: 30px;">Ya entiendes la diferencia entre</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin: 40px 0;">
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                    <h3>🔗 Simple</h3>
+                    <p>Una dirección</p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                    <h3>🔄 Doble</h3>
+                    <p>Bidireccional</p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 15px;">
+                    <h3>🔁 Circular</h3>
+                    <p>Sin final</p>
+                </div>
+            </div>
+            <h2 style="font-size: 1.3rem; margin-top: 40px;">La próxima semana: Presentaciones Individuales</h2>
+            <div style="margin-top: 30px;">
+                <p style="font-size: 1.1rem;">15-20 minutos por estudiante demostrando su proyecto</p>
+            </div>
+            <div class="slide-number">12 / 12</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+            slides[currentSlide].style.animation = 'fadeInUp 0.6s ease-out';
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Animate nodes on hover
+        document.querySelectorAll('.node, .doubly-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 10px 20px rgba(102, 126, 234, 0.5)';
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
