@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 7: Pilas (Stacks)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            text-align: center;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .keyword {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #98d982;
+        }
+
+        .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+
+        .card-purple {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+        }
+
+        .visual-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .stack-element {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            min-width: 100px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .stack-top {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .stack-element:hover {
+            transform: scale(1.05);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .center-content {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .slide { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide title-slide">
+            <h1>PILAS (STACKS)</h1>
+            <h2>Semana 7: Uso Práctico - Estructura de Datos</h2>
+            <div style="margin-top: 30px;">
+                <p style="font-size: 1.3rem; margin: 10px 0;">🥞 Last In, First Out (LIFO)</p>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Aplicación en nuestro Sistema de Biblioteca</p>
+            </div>
+            <div class="slide-number">1 / 13</div>
+        </div>
+
+        <!-- Slide 2: Hagamos todos la biblioteca -->
+        <div class="slide">
+            <h1>📚 Hagamos todos la biblioteca</h1>
+            
+            <div class="center-content">
+                <div class="card card-green" style="display: inline-block; margin-bottom: 20px;">
+                    <h3>📖 Estado actual del proyecto</h3>
+                    <p>Sistema básico de gestión de libros</p>
+                    <p>ArrayList + LinkedList + Menús terminales</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ Lo que ya tenemos</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📚 CRUD de libros</li>
+                        <li>🔍 Búsquedas por criterios</li>
+                        <li>🖥️ Interfaz de terminal</li>
+                        <li>📊 Categorización básica</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>🚀 Lo que agregaremos HOY</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>↩️ Funcionalidad de DESHACER</li>
+                        <li>📝 Historial de operaciones</li>
+                        <li>⚡ Stack para undo/redo</li>
+                        <li>🔧 Integración con menús</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 Objetivo de hoy: Entender Stack aplicándolo</h3>
+                <p>No solo teoría - vamos a usarlo en nuestro proyecto</p>
+            </div>
+
+            <div class="slide-number">2 / 13</div>
+        </div>
+
+        <!-- Slide 3: Transición importante -->
+        <div class="slide">
+            <h1>🚀 Momento de Transición</h1>
+            <h2>De implementar a usar efectivamente</h2>
+            
+            <div class="grid">
+                <div class="card card-red">
+                    <h3>🛠️ SEMANAS 1-4: LO QUE HICIMOS</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🔨 Implementamos ArrayList desde cero</li>
+                        <li>🔗 Implementamos LinkedList desde cero</li>
+                        <li>🧠 Entendimos cómo funcionan internamente</li>
+                        <li>⚙️ Complejidad O(1) vs O(n)</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>📈 SEMANAS 7-16: LO QUE HAREMOS</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>☕ Usaremos Stack de Java</li>
+                        <li>🎯 Usaremos Queue de Java</li>
+                        <li>🏆 Aplicaremos para resolver problemas</li>
+                        <li>🧭 Aprenderemos cuándo usar cada una</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎓 Nueva mentalidad del curso</h3>
+                <p>"Ahora que sabes cómo funcionan por dentro,</p>
+                <p>aprende cuándo y cómo usarlas en la vida real"</p>
+            </div>
+
+            <div class="slide-number">3 / 13</div>
+        </div>
+
+        <!-- Slide 4: ¿Qué es una pila? -->
+        <div class="slide">
+            <h1>🥞 ¿Qué es una Pila (Stack)?</h1>
+            <h2>Last In, First Out (LIFO)</h2>
+            
+            <div class="highlight-box">
+                <h3>🥞 Analogía: Pila de platos</h3>
+                <p>El último plato que pones es el primero que quitas</p>
+            </div>
+
+            <div class="grid">
+                <div class="visual-stack">
+                    <div style="color: #667eea; font-weight: bold; margin-bottom: 10px;">TOP (tope)</div>
+                    <div style="font-size: 2rem;">⬇️</div>
+                    <div class="stack-element stack-top">Plato 3</div>
+                    <div class="stack-element">Plato 2</div>
+                    <div class="stack-element">Plato 1</div>
+                    <div style="color: #95a5a6; font-weight: bold; margin-top: 10px;">BOTTOM (fondo)</div>
+                </div>
+                
+                <div>
+                    <h3 style="color: #2c3e50;">📋 Reglas de la pila:</h3>
+                    <div class="concept-box">
+                        <ul style="list-style: none; font-size: 1rem;">
+                            <li>✅ Solo puedes agregar al TOPE</li>
+                            <li>✅ Solo puedes quitar del TOPE</li>
+                            <li>✅ Solo puedes ver el elemento del TOPE</li>
+                            <li>❌ NO puedes acceder a elementos del medio</li>
+                            <li>❌ NO puedes ver elementos internos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">4 / 13</div>
+        </div>
+
+        <!-- Slide 5: Operaciones básicas -->
+        <div class="slide">
+            <h1>⚙️ Operaciones Básicas de Stack</h1>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📥 INSERCIÓN</h3>
+                    <h4 style="font-size: 1.3rem; margin: 15px 0;">push(elemento)</h4>
+                    <p>Agregar elemento al tope</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">Siempre O(1) - muy eficiente</p>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>📤 EXTRACCIÓN</h3>
+                    <h4 style="font-size: 1.3rem; margin: 15px 0;">pop()</h4>
+                    <p>Remover y retornar elemento del tope</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8;">También O(1) - super rápido</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>👁️ CONSULTA</h3>
+                    <div style="margin-top: 15px;">
+                        <h4>peek() / top()</h4>
+                        <p style="font-size: 0.9rem;">Ver elemento del tope sin removerlo</p>
+                        <h4>isEmpty()</h4>
+                        <p style="font-size: 0.9rem;">Verificar si la pila está vacía</p>
+                    </div>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>📏 INFORMACIÓN</h3>
+                    <div style="margin-top: 15px;">
+                        <h4>size()</h4>
+                        <p style="font-size: 0.9rem;">Cantidad de elementos en la pila</p>
+                        <h4>search(elemento)</h4>
+                        <p style="font-size: 0.9rem;">Buscar posición desde el tope</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Todas las operaciones principales son O(1)</h3>
+                <p>push(), pop(), peek(), isEmpty() - super eficientes</p>
+            </div>
+
+            <div class="slide-number">5 / 13</div>
+        </div>
+
+        <!-- Slide 6: Stack en Java -->
+        <div class="slide">
+            <h1>☕ Stack en Java</h1>
+            <h2>Usando java.util.Stack</h2>
+            
+            <div class="code-example">
+<span class="keyword">import</span> java.util.Stack;<br><br>
+<span class="comment">// Declaración y creación</span><br>
+Stack&lt;String&gt; pila = <span class="keyword">new</span> Stack&lt;&gt;();<br><br>
+<span class="comment">// Operaciones básicas</span><br>
+pila.<span class="keyword">push</span>(<span class="string">"Primero"</span>);    <span class="comment">// Agregar al tope</span><br>
+pila.<span class="keyword">push</span>(<span class="string">"Segundo"</span>);<br>
+pila.<span class="keyword">push</span>(<span class="string">"Tercero"</span>);<br><br>
+String ultimo = pila.<span class="keyword">pop</span>();         <span class="comment">// "Tercero" (remueve y retorna)</span><br>
+String tope = pila.<span class="keyword">peek</span>();          <span class="comment">// "Segundo" (solo consulta)</span><br>
+<span class="keyword">boolean</span> vacia = pila.<span class="keyword">isEmpty</span>();   <span class="comment">// false</span><br>
+<span class="keyword">int</span> tamaño = pila.<span class="keyword">size</span>();        <span class="comment">// 2</span>
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ Ventajas Stack de Java</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🔒 Thread-safe por defecto</li>
+                        <li>📈 Crece automáticamente</li>
+                        <li>🧬 Hereda de Vector</li>
+                        <li>🔍 Métodos adicionales útiles</li>
+                        <li>⚡ Ya implementado y probado</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>💡 ¿Por qué usar Stack de Java?</h3>
+                    <p style="margin-top: 15px;">Ya entiendes cómo funciona internamente</p>
+                    <p>Ahora enfócate en CUÁNDO y PARA QUÉ usarla</p>
+                </div>
+            </div>
+
+            <div class="slide-number">6 / 13</div>
+        </div>
+
+        <!-- Slide 7: Aplicaciones reales - Parte 1 -->
+        <div class="slide">
+            <h1>🌍 Aplicaciones Reales - Parte 1</h1>
+            <h2>¿Cuándo usar pilas en la vida real?</h2>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🔙 SISTEMA UNDO/REDO</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📝 Editores de texto (Ctrl+Z)</li>
+                        <li>🎨 Photoshop, Illustrator</li>
+                        <li>💻 IDEs como IntelliJ, VSCode</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: bold;">Principio: La última acción es la primera en deshacerse</p>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>🌐 HISTORIAL NAVEGADOR</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>⬅️ Botón "Atrás" del navegador</li>
+                        <li>📱 Navegación entre screens en apps</li>
+                        <li>🎬 Historial de videos en YouTube</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: bold;">Principio: Última página visitada = primera en volver</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🎯 ¿Por qué Stack es perfecta para estos casos?</h3>
+                <div class="grid" style="margin-top: 15px;">
+                    <div>
+                        <h4 style="color: #667eea;">⏱️ Orden temporal natural</h4>
+                        <p>Lo más reciente es lo más relevante</p>
+                        <h4 style="color: #667eea; margin-top: 10px;">🧠 Lógica intuitiva</h4>
+                        <p>Como pensamos naturalmente</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea;">🚀 Acceso O(1) al último</h4>
+                        <p>No necesitas buscar, siempre es el tope</p>
+                        <h4 style="color: #667eea; margin-top: 10px;">💾 Gestión de memoria</h4>
+                        <p>Fácil limpiar elementos antiguos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">7 / 13</div>
+        </div>
+
+        <!-- Slide 8: Aplicaciones reales - Parte 2 -->
+        <div class="slide">
+            <h1>🌍 Aplicaciones Reales - Parte 2</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>🧮 EVALUACIÓN DE EXPRESIONES</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🔢 Calculadoras científicas</li>
+                        <li>⚙️ Compiladores e intérpretes</li>
+                        <li>📐 Expresiones matemáticas complejas</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: bold;">Principio: Evaluar operaciones anidadas (paréntesis)</p>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>⚙️ CALL STACK PROGRAMACIÓN</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📞 Llamadas de funciones en Java</li>
+                        <li>🔄 Recursión</li>
+                        <li>🚨 Stack Overflow (pila llena)</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: bold;">Principio: Última función llamada = primera en terminar</p>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="comment">// Ejemplo: Call Stack en recursión</span><br>
+<span class="keyword">public int</span> factorial(<span class="keyword">int</span> n) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>(n <= 1) <span class="keyword">return</span> 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> n * factorial(n-1);  <span class="comment">// Se apilan las llamadas</span><br>
+}<br><br>
+<span class="comment">// factorial(3) apila: factorial(3) → factorial(2) → factorial(1)</span><br>
+<span class="comment">// Se desapila: factorial(1) → factorial(2) → factorial(3)</span>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🔍 Patrón común en todas las aplicaciones:</h3>
+                <p>Necesitas recordar el orden para REVERTIR o REGRESAR</p>
+            </div>
+
+            <div class="slide-number">8 / 13</div>
+        </div>
+
+        <!-- Slide 9: Cuándo usar Stack -->
+        <div class="slide">
+            <h1>🎯 Cuándo usar Stack vs Otras Estructuras</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ USA STACK CUANDO:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🥞 Necesitas acceso LIFO</li>
+                        <li>↩️ Implementas undo/redo</li>
+                        <li>🧮 Evalúas expresiones anidadas</li>
+                        <li>🔄 Manejas recursión manualmente</li>
+                        <li>⬅️ Navegas hacia atrás en historiales</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>❌ NO USES STACK CUANDO:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>🎯 Necesitas acceso aleatorio</li>
+                        <li>🚶‍♂️ Requieres orden FIFO (usa Queue)</li>
+                        <li>🔍 Buscas elementos del medio</li>
+                        <li>📊 Requieres acceso por índice</li>
+                        <li>📈 Necesitas operaciones complejas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🔄 STACK vs ARRAYLIST</h3>
+                    <p><strong>Stack:</strong> Solo acceso al tope, operaciones específicas</p>
+                    <p><strong>ArrayList:</strong> Acceso por índice, mayor flexibilidad</p>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>🔄 STACK vs QUEUE</h3>
+                    <p><strong>Stack:</strong> LIFO, undo/redo, expresiones</p>
+                    <p><strong>Queue:</strong> FIFO, colas de espera, BFS</p>
+                </div>
+            </div>
+
+            <div class="slide-number">9 / 13</div>
+        </div>
+
+        <!-- Slide 10: Proyecto biblioteca -->
+        <div class="slide">
+            <h1>🚀 Proyecto: Módulo de Undo para Biblioteca</h1>
+            <h2>Integración con sistema existente</h2>
+            
+            <div class="code-example">
+<span class="comment">// Estructura del sistema de undo</span><br>
+<span class="keyword">public class</span> SistemaUndo {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> Stack&lt;Accion&gt; undoStack = <span class="keyword">new</span> Stack&lt;&gt;();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> Stack&lt;Accion&gt; redoStack = <span class="keyword">new</span> Stack&lt;&gt;();<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public void</span> ejecutarAccion(Accion accion) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;accion.ejecutar();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;undoStack.push(accion);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;redoStack.clear();  <span class="comment">// Limpiar redo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>📋 QUÉ IMPLEMENTAR</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>↩️ Sistema de deshacer para libros</li>
+                        <li>🔄 Máximo 10 operaciones en memoria</li>
+                        <li>⌨️ Comandos: /undo, /redo, /historial</li>
+                        <li>🔗 Integración con menús existentes</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-blue">
+                    <h3>🎯 OPERACIONES A DESHACER</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>📚 Agregar libro</li>
+                        <li>🗑️ Eliminar libro</li>
+                        <li>✏️ Editar información de libro</li>
+                        <li>🏷️ Cambiar categoría</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 Esto te prepara para la Entrega 2</h3>
+                <p>Sistema completo con Stack aplicado efectivamente</p>
+            </div>
+
+            <div class="slide-number">12 / 13</div>
+        </div>
+
+        <!-- Slide 13: Próxima semana -->
+        <div class="slide title-slide">
+            <h1>¡Excelente trabajo con Stack!</h1>
+            <h2 style="margin-top: 30px;">La próxima semana:</h2>
+            <div style="background: rgba(255, 255, 255, 0.2); padding: 25px; border-radius: 15px; margin: 25px 0;">
+                <h3 style="font-size: 1.8rem;">🚶‍♂️ COLAS (QUEUES)</h3>
+                <p style="font-size: 1.2rem; margin: 10px 0;">First In, First Out (FIFO)</p>
+                <p style="opacity: 0.9;">Aplicaciones en sistema de reservas</p>
+            </div>
+            <div style="margin-top: 30px;">
+                <h3>🎯 Para la próxima clase:</h3>
+                <p style="opacity: 0.9;">Trae avances del módulo de undo</p>
+                <p style="opacity: 0.9;">Completa los ejercicios de trabajo independiente</p>
+            </div>
+            <div class="slide-number">11 / 11</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
