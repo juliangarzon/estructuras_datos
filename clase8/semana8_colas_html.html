@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 8: Colas (Queues)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            text-align: center;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .keyword {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #98d982;
+        }
+
+        .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+
+        .card-purple {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+        }
+
+        .card-orange {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .visual-queue {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .queue-element {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .queue-first {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .queue-last {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .queue-element:hover {
+            transform: scale(1.05);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .center-content {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .slide { padding: 20px; }
+            .visual-queue { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide title-slide">
+            <h1>COLAS (QUEUES)</h1>
+            <h2>Semana 8: Uso Práctico - Estructura de Datos</h2>
+            <div style="margin-top: 30px;">
+                <p style="font-size: 1.3rem; margin: 10px 0;">🚶‍♂️ First In, First Out (FIFO)</p>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Sistema de Reservas en la Biblioteca</p>
+            </div>
+            <div class="slide-number">1 / 11</div>
+        </div>
+
+        <!-- Slide 2: Activador -->
+        <div class="slide">
+            <h1>🤔 ¿DUDAS DEL STACK?</h1>
+            
+            <div class="center-content">
+                <div class="card card-green" style="display: inline-block; margin-bottom: 20px; max-width: 600px;">
+                    <h3>📚 ¿CÓMO LES FUE CON LA IMPLEMENTACIÓN DEL "DESHACER" EN LA BIBLIOTECA?</h3>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>💬 COMPARTAMOS EXPERIENCIAS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>❓ ¿Tuvieron problemas con push() y pop()?</li>
+                        <li>✅ ¿La función deshacer funcionó correctamente?</li>
+                        <li>🔧 ¿Alguna dificultad integrando Stack con el menú?</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>🎯 PREGUNTAS FRECUENTES</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🤔 ¿Qué fue lo más difícil?</li>
+                        <li>💡 ¿Descubrieron algo interesante?</li>
+                        <li>❓ ¿Hay dudas pendientes sobre Stack?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🔄 TRANSICIÓN</h3>
+                <p>"Ahora que dominan Stack (LIFO), vamos a ver su contraparte: Queue (FIFO)"</p>
+            </div>
+
+            <div class="slide-number">2 / 11</div>
+        </div>
+
+        <!-- Slide 3: Repaso Stack y Transición -->
+        <div class="slide">
+            <h1>🔄 REPASO: STACK (SEMANA 7)</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ ¿Qué implementamos con Stack?</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>↩️ Función "deshacer" en la biblioteca</li>
+                        <li>🥞 LIFO: Last In, First Out</li>
+                        <li>⚡ push(), pop(), peek()</li>
+                        <li>📝 Historial de operaciones</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>🤔 PREGUNTA PUENTE</h3>
+                    <div style="margin-top: 15px;">
+                        <p><strong>Stack:</strong> "¿Quién fue el ÚLTIMO en hacer algo?"</p>
+                        <p style="margin-top: 10px;"><strong>Queue:</strong> "¿Quién fue el PRIMERO en llegar?"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">📊 COMPARACIÓN VISUAL</h3>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="margin: 15px 0;">
+                        <strong>Stack (LIFO):</strong> [3][2][1] → pop() → saca 3
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <strong>Queue (FIFO):</strong> [1][2][3] → poll() → saca 1
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">3 / 11</div>
+        </div>
+
+        <!-- Slide 4: Concepto Queue - FIFO -->
+        <div class="slide">
+            <h1>🎯 QUEUE (COLA): FIRST IN, FIRST OUT</h1>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🏪 ANALOGÍAS COTIDIANAS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🛒 Cola del supermercado</li>
+                        <li>🏦 Fila del banco</li>
+                        <li>🏥 Lista de espera médica</li>
+                        <li>📚 ¡Reservas de libros en nuestra biblioteca!</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>⚡ OPERACIONES PRINCIPALES</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📥 offer()/add() - Agregar al final</li>
+                        <li>📤 poll()/remove() - Sacar del frente</li>
+                        <li>👁️ peek() - Ver el primero sin sacar</li>
+                        <li>❓ isEmpty() - ¿Está vacía?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">📋 PRINCIPIO FIFO</h3>
+                <div class="visual-queue">
+                    <div style="color: #667eea; font-weight: bold;">ENTRADA</div>
+                    <div class="arrow">→</div>
+                    <div class="queue-element queue-last">Usuario3</div>
+                    <div class="queue-element">Usuario2</div>
+                    <div class="queue-element queue-first">Usuario1</div>
+                    <div class="arrow">→</div>
+                    <div style="color: #667eea; font-weight: bold;">SALIDA</div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <p><strong>offer()</strong> agregar atrás &nbsp;&nbsp;&nbsp;&nbsp; <strong>poll()</strong> sacar adelante</p>
+                </div>
+            </div>
+
+            <div class="slide-number">4 / 11</div>
+        </div>
+
+        <!-- Slide 5: Queue en Java -->
+        <div class="slide">
+            <h1>☕ INTERFACE QUEUE EN JAVA</h1>
+            
+            <div class="grid">
+                <div class="card card-purple">
+                    <h3>🔧 IMPLEMENTACIONES DISPONIBLES</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>⭐ <strong>ArrayDeque</strong> (Recomendada - más eficiente)</li>
+                        <li>🔗 LinkedList (también implementa Queue)</li>
+                        <li>🎯 PriorityQueue (veremos después)</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-orange">
+                    <h3>⚠️ DIFERENCIAS IMPORTANTES</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>offer() vs add() (manejo de límites)</li>
+                        <li>poll() vs remove() (null vs Exception cuando vacía)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="keyword">import</span> java.util.Queue;<br>
+<span class="keyword">import</span> java.util.ArrayDeque;<br><br>
+<span class="comment">// Crear queue</span><br>
+Queue&lt;String&gt; cola = <span class="keyword">new</span> ArrayDeque&lt;&gt;();<br><br>
+<span class="comment">// Operaciones básicas</span><br>
+cola.<span class="keyword">offer</span>(<span class="string">"Usuario1"</span>);     <span class="comment">// Agregar</span><br>
+cola.<span class="keyword">offer</span>(<span class="string">"Usuario2"</span>);<br>
+cola.<span class="keyword">offer</span>(<span class="string">"Usuario3"</span>);<br><br>
+String siguiente = cola.<span class="keyword">poll</span>();  <span class="comment">// "Usuario1" (y lo remueve)</span><br>
+String primero = cola.<span class="keyword">peek</span>();   <span class="comment">// "Usuario2" (sin remover)</span><br>
+<span class="keyword">int</span> tamaño = cola.<span class="keyword">size</span>();        <span class="comment">// 2</span><br>
+<span class="keyword">boolean</span> vacía = cola.<span class="keyword">isEmpty</span>(); <span class="comment">// false</span>
+            </div>
+
+            <div class="slide-number">5 / 11</div>
+        </div>
+
+        <!-- Slide 6: Stack vs Queue Comparación -->
+        <div class="slide">
+            <h1>⚔️ STACK VS QUEUE: ¿CUÁNDO USAR CADA UNO?</h1>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Stack (LIFO)</th>
+                            <th>Queue (FIFO)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Orden salida</strong></td>
+                            <td>Último primero</td>
+                            <td>Primero primero</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operación clave</strong></td>
+                            <td>push/pop</td>
+                            <td>offer/poll</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Uso típico</strong></td>
+                            <td>Undo/Redo</td>
+                            <td>Procesar en orden</td>
+                        </tr>
+                        <tr>
+                            <td><strong>En biblioteca</strong></td>
+                            <td>Deshacer acciones</td>
+                            <td>Lista de espera</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ejemplo real</strong></td>
+                            <td>Ctrl+Z</td>
+                            <td>Cola de impresión</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 REGLA DE ORO</h3>
+                <p><strong>Stack:</strong> "¿Necesito deshacer el último cambio?"</p>
+                <p><strong>Queue:</strong> "¿Necesito procesar en orden de llegada?"</p>
+            </div>
+
+            <div class="slide-number">6 / 11</div>
+        </div>
+
+        <!-- Slide 7: Implementación en Proyecto Biblioteca -->
+        <div class="slide">
+            <h1>📚 APLICANDO QUEUE EN LA BIBLIOTECA</h1>
+            <h2>🎯 FUNCIONALIDAD: SISTEMA DE RESERVAS</h2>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📋 FLUJO DEL SISTEMA</h3>
+                    <ol style="margin-top: 15px;">
+                        <li>Usuario solicita libro prestado</li>
+                        <li>Si disponible → préstamo inmediato</li>
+                        <li>Si NO disponible → agregar a Queue de espera</li>
+                        <li>Cuando se devuelve → procesar Queue</li>
+                        <li>Notificar al siguiente en la cola</li>
+                    </ol>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>💡 VENTAJAS DEL SISTEMA</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>⚖️ Justicia: Primero en pedir, primero en recibir</li>
+                        <li>📊 Transparencia: Ver posición en cola</li>
+                        <li>⚡ Eficiencia: Proceso automático</li>
+                        <li>📝 Trazabilidad: Historial de reservas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="keyword">public class</span> Libro {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> String titulo;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private boolean</span> disponible;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span> Queue&lt;Usuario&gt; colaEspera;<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span> String solicitarPrestamo(Usuario usuario) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (disponible) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;disponible = <span class="keyword">false</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="string">"Libro prestado a "</span> + usuario.getNombre();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span class="keyword">else</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;colaEspera.offer(usuario);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="string">"Agregado a lista de espera. Posición: "</span> + colaEspera.size();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+            </div>
+
+            <div class="slide-number">7 / 11</div>
+        </div>
+
+        <!-- Slide 8: Casos de Uso Avanzados -->
+        <div class="slide">
+            <h1>🚀 CASOS DE USO AVANZADOS DE QUEUE</h1>
+            
+            <div class="grid">
+                <div class="card card-purple">
+                    <h3>💻 EN SISTEMAS INFORMÁTICOS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🖥️ <strong>Procesos del SO:</strong> Queue de procesos listos</li>
+                        <li>🖨️ <strong>Impresión:</strong> Cola de documentos por imprimir</li>
+                        <li>🌐 <strong>Web servers:</strong> Queue de requests por procesar</li>
+                        <li>🎮 <strong>Gaming:</strong> Queue de jugadores esperando partida</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-blue">
+                    <h3>📚 EN NUESTRA BIBLIOTECA</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📖 Cola de reservas por libro</li>
+                        <li>📧 Cola de notificaciones por enviar</li>
+                        <li>📦 Cola de libros por procesar (nuevas adquisiciones)</li>
+                        <li>🔧 Cola de tareas de mantenimiento del sistema</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>🔮 EXTENSIONES FUTURAS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🎯 <strong>PriorityQueue:</strong> Colas con prioridades</li>
+                        <li>↔️ <strong>Deque:</strong> Colas de doble extremo</li>
+                        <li>🔒 <strong>BlockingQueue:</strong> Para programación concurrente</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-orange">
+                    <h3>💡 PRINCIPIO CLAVE</h3>
+                    <p style="margin-top: 15px;">Úsa Queue cuando necesites <strong>procesar elementos en el mismo orden que llegaron</strong></p>
+                </div>
+            </div>
+
+            <div class="slide-number">8 / 11</div>
+        </div>
+
+        <!-- Slide 9: Análisis de Eficiencia -->
+        <div class="slide">
+            <h1>⚡ EFICIENCIA DE QUEUE CON ARRAYDEQUE</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>📊 COMPLEJIDAD TEMPORAL</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📥 <strong>offer():</strong> O(1) - Tiempo constante</li>
+                        <li>📤 <strong>poll():</strong> O(1) - Tiempo constante</li>
+                        <li>👁️ <strong>peek():</strong> O(1) - Tiempo constante</li>
+                        <li>📏 <strong>size():</strong> O(1) - Tiempo constante</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-blue">
+                    <h3>💾 COMPLEJIDAD ESPACIAL</h3>
+                    <p style="margin-top: 15px;"><strong>O(n)</strong> donde n = número de elementos</p>
+                    <p style="margin-top: 10px;">Crecimiento dinámico según necesidad</p>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🔧 ¿POR QUÉ ARRAYDEQUE ES MEJOR QUE LINKEDLIST?</h3>
+                <div class="grid" style="margin-top: 15px;">
+                    <div>
+                        <h4 style="color: #667eea;">🧠 Mejor localidad de memoria</h4>
+                        <p>Elementos contiguos en memoria</p>
+                        <h4 style="color: #667eea; margin-top: 10px;">💾 Menos overhead por nodo</h4>
+                        <p>No necesita punteros extra</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea;">⚡ Acceso más rápido en la práctica</h4>
+                        <p>Cache-friendly operations</p>
+                        <h4 style="color: #667eea; margin-top: 10px;">📈 Mejor rendimiento general</h4>
+                        <p>Especialmente con muchas operaciones</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide-number">9 / 11</div>
+        </div>
+
+        <!-- Slide 10: Vamos a la Práctica -->
+        <div class="slide">
+            <h1>🛠️ VAMOS A LA PRÁCTICA</h1>
+            <h2>[ESPACIO PARA EJERCICIO PRÁCTICO]</h2>
+            
+            <div class="center-content">
+                <div class="card card-green" style="display: inline-block; margin-bottom: 30px; max-width: 800px;">
+                    <h3>🎯 Ejercicio Práctico de Implementación</h3>
+                    <p style="margin-top: 15px;">Implementaremos un simulador de sistema de reservas</p>
+                    <p>usando Queue para manejar las solicitudes de libros</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📋 LO QUE VAMOS A HACER</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🏗️ Crear sistema de reservas básico</li>
+                        <li>👥 Agregar usuarios a colas de espera</li>
+                        <li>📊 Mostrar posición en la cola</li>
+                        <li>⚡ Procesar reservas automáticamente</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>🎓 LO QUE APRENDEREMOS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>🔧 Uso práctico de ArrayDeque</li>
+                        <li>💡 Cuándo usar Queue vs Stack</li>
+                        <li>🏗️ Integración con sistemas existentes</li>
+                        <li>⚡ Gestión eficiente de colas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🔥 ¡Manos a la obra!</h3>
+                <p>Implementación paso a paso con debugging en vivo</p>
+            </div>
+
+            <div class="slide-number">10 / 11</div>
+        </div>
+
+        <!-- Slide 11: Tarea y Próxima Clase -->
+        <div class="slide title-slide">
+            <h1>¡Excelente trabajo con Queue!</h1>
+            <h2 style="margin-top: 30px;">📚 TRABAJO INDEPENDIENTE</h2>
+            <div style="background: rgba(255, 255, 255, 0.2); padding: 25px; border-radius: 15px; margin: 25px 0;">
+                <h3>🎯 TAREAS PARA ESTA SEMANA</h3>
+                <ul style="list-style: none; padding: 0; text-align: left; margin-top: 15px;">
+                    <li>1. Sistema de manejo de tareas con Queue</li>
+                    <li>2. Simulador de procesos del SO básico</li>
+                    <li>3. Integración completa en proyecto biblioteca</li>
+                </ul>
+            </div>
+            <div style="margin-top: 30px;">
+                <h3>🔮 PRÓXIMA SEMANA: RECURSIÓN</h3>
+                <p style="opacity: 0.9;">Patrones recursivos fundamentales</p>
+                <p style="opacity: 0.9;">Aplicación en búsquedas jerárquicas</p>
+                <p style="opacity: 0.9;">Preparación para backtracking</p>
+            </div>
+            <div class="slide-number">11 / 11</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
