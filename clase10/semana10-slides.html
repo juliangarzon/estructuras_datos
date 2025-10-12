@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 10: Backtracking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 70vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .keyword {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #98d982;
+        }
+
+        .comment {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+
+        .card-purple {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+        }
+
+        .card-orange {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .card-pink {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .center-content {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .tree-diagram {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.8rem;
+            line-height: 1.8;
+        }
+
+        .pattern-box {
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            margin: 15px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .slide { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide title-slide active">
+            <h1>🔄 BACKTRACKING</h1>
+            <h2>Semana 10: Estructura de Datos</h2>
+            <div style="margin-top: 30px;">
+                <p style="font-size: 1.3rem; margin: 10px 0;">🎯 Recursión con retroceso</p>
+                <p style="font-size: 1.1rem; opacity: 0.9;">Explorando todas las soluciones posibles</p>
+            </div>
+            <div style="margin-top: 40px; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px;">
+                <p style="font-size: 1rem;">⏰ PARTE 1: Dudas del Proyecto (45 min)</p>
+                <p style="font-size: 1rem;">⏰ PARTE 2: Teoría + Patrón (40 min)</p>
+                <p style="font-size: 1rem;">⏰ PARTE 3: Live Coding (75 min)</p>
+                <p style="font-size: 1rem;">⏰ PARTE 4: Cierre (20 min)</p>
+            </div>
+            <div class="slide-number">1 / 11</div>
+        </div>
+
+        <!-- Slide 2: ¿Qué es Backtracking? -->
+        <div class="slide">
+            <h1>🤔 ¿QUÉ ES BACKTRACKING?</h1>
+            
+            <div class="highlight-box">
+                <h2>Una técnica de recursión con "vuelta atrás"</h2>
+                <p style="margin-top: 15px; font-size: 1.1rem;">Probar → ¿Funciona? → Seguir | ¿No funciona? → Regresar</p>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">🎯 ANALOGÍA DEL LABERINTO</h3>
+                <div style="margin-top: 20px;">
+                    <p style="text-align: center; font-size: 1.1rem;">
+                        Imagina que estás en un laberinto buscando la salida:
+                    </p>
+                    <ul style="margin-top: 15px; list-style: none; padding: 0;">
+                        <li>✅ 1. Avanzas por un camino</li>
+                        <li>❌ 2. Llegas a un callejón sin salida</li>
+                        <li>↩️ 3. <strong>REGRESAS</strong> al último punto de decisión</li>
+                        <li>🔄 4. Intentas otro camino</li>
+                        <li>🎯 5. Repites hasta encontrar la salida</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-purple">
+                    <h3>📖 DEFINICIÓN TÉCNICA</h3>
+                    <p style="margin-top: 15px;">Es un algoritmo de <strong>fuerza bruta inteligente</strong> que:</p>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>✅ Explora todas las soluciones</li>
+                        <li>✂️ Poda ramas inválidas</li>
+                        <li>↩️ Retrocede cuando no puede avanzar</li>
+                        <li>🔄 Usa recursión naturalmente</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-orange">
+                    <h3>🎲 EJEMPLOS CLÁSICOS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>♟️ N-Reinas</li>
+                        <li>🧩 Sudoku Solver</li>
+                        <li>🗺️ Laberintos</li>
+                        <li>🎒 Problema de la mochila</li>
+                        <li>🔤 Permutaciones</li>
+                        <li>🎨 Colorear grafos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="slide-number">2 / 13</div>
+        </div>
+
+        <!-- Slide 3: Componentes Esenciales -->
+        <div class="slide">
+            <h1>🧩 COMPONENTES ESENCIALES</h1>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">4 PARTES FUNDAMENTALES</h3>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>1️⃣ VALIDAR</h3>
+                    <p style="margin-top: 10px;">¿Puedo colocar esta opción aquí?</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        if (!esValido(opcion)) {<br>
+                        &nbsp;&nbsp;continue; // Skip<br>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>2️⃣ HACER</h3>
+                    <p style="margin-top: 10px;">Agregar esta decisión</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        solucionParcial<br>
+                        &nbsp;&nbsp;.agregar(opcion);
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-purple">
+                    <h3>3️⃣ EXPLORAR</h3>
+                    <p style="margin-top: 10px;">Continuar recursivamente</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        if (backtrack(<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;nuevoEstado)) {<br>
+                        &nbsp;&nbsp;return true;<br>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>4️⃣ DESHACER</h3>
+                    <p style="margin-top: 10px;">Quitar decisión (BACKTRACK)</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        solucionParcial<br>
+                        &nbsp;&nbsp;.remover(opcion);
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 RECUERDA</h3>
+                <p style="font-size: 1.2rem; margin-top: 10px;">VALIDAR → HACER → EXPLORAR → DESHACER</p>
+                <p style="margin-top: 10px;">Este patrón se repite en TODOS los problemas de backtracking</p>
+            </div>
+
+            <div class="slide-number">3 / 11</div>
+        </div>
+
+        <!-- Slide 4: El Patrón -->
+        <div class="slide">
+            <h1>📐 EL PATRÓN DE BACKTRACKING</h1>
+            
+            <div class="code-example">
+<span class="keyword">boolean</span> backtrack(Estado actual, Solucion parcial) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// CASO BASE: ¿Llegué a una solución completa?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (esSolucionCompleta(parcial)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;procesarSolucion(parcial);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return true</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// GENERAR todas las opciones disponibles</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> (Opcion opcion : obtenerOpciones(actual)) {<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 1️⃣ VALIDAR: ¿Esta opción es válida?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (esValida(opcion, parcial)) {<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 2️⃣ HACER: Agregar opción</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parcial.agregar(opcion);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 3️⃣ EXPLORAR: Continuar recursivamente</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (backtrack(nuevoEstado, parcial)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return true</span>; <span class="comment">// ¡Encontré solución!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 4️⃣ DESHACER: Quitar opción (BACKTRACK)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parcial.remover(opcion);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return false</span>; <span class="comment">// No hay solución por aquí</span><br>
+}
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">🎯 PUNTO CLAVE</h3>
+                <p style="text-align: center; margin-top: 10px;">
+                    El <strong>DESHACER</strong> es lo que lo hace "backtracking".<br>
+                    Sin esa línea, sería solo recursión normal.
+                </p>
+            </div>
+
+            <div class="slide-number">4 / 11</div>
+        </div>
+
+        <!-- Slide 5: Árbol de Decisiones -->
+        <div class="slide">
+            <h1>🌳 ÁRBOL DE DECISIONES</h1>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">Visualizando el backtracking</h3>
+                <p style="text-align: center; margin-top: 10px;">Ejemplo: Subconjuntos de {1, 2, 3}</p>
+            </div>
+
+            <div class="tree-diagram">
+                                    []<br>
+                                   /  \<br>
+                              [1]       []<br>
+                             /  \      /  \<br>
+                        [1,2]  [1]  [2]   []<br>
+                        /  \   / \  / \   / \<br>
+                [1,2,3][1,2][1,3][1][2,3][2][3][]
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📍 RECORRIDO</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px; font-size: 0.9rem;">
+                        <li>1️⃣ Baja por la izquierda (incluir 1)</li>
+                        <li>2️⃣ Baja más (incluir 2)</li>
+                        <li>3️⃣ Baja más (incluir 3) → [1,2,3] ✅</li>
+                        <li>↩️ <strong>BACKTRACK:</strong> quita 3</li>
+                        <li>4️⃣ Derecha (no incluir 3) → [1,2] ✅</li>
+                        <li>↩️ <strong>BACKTRACK:</strong> quita 2</li>
+                        <li>5️⃣ Y así sucesivamente...</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>🎯 TODAS LAS SOLUCIONES</h3>
+                    <div style="margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        []<br>
+                        [1]<br>
+                        [1, 2]<br>
+                        [1, 2, 3]<br>
+                        [1, 3]<br>
+                        [2]<br>
+                        [2, 3]<br>
+                        [3]
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 OBSERVACIÓN</h3>
+                <p style="margin-top: 10px;">Cada nodo es una <strong>decisión</strong>: incluir o no incluir el elemento</p>
+            </div>
+
+            <div class="slide-number">5 / 11</div>
+        </div>
+
+        <!-- Slide 6: Ejemplo 1 - Permutaciones -->
+        <div class="slide">
+            <h1>🎯 EJEMPLO 1: PERMUTACIONES</h1>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🎲 PROBLEMA</h3>
+                <p style="margin-top: 10px; text-align: center;">
+                    Generar todas las permutaciones de [1, 2, 3]
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📋 INPUT</h3>
+                    <p style="margin-top: 15px; font-family: monospace;">
+                        [1, 2, 3]
+                    </p>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>✅ OUTPUT ESPERADO</h3>
+                    <div style="margin-top: 10px; font-family: monospace; font-size: 0.85rem;">
+                        [1, 2, 3]<br>
+                        [1, 3, 2]<br>
+                        [2, 1, 3]<br>
+                        [2, 3, 1]<br>
+                        [3, 1, 2]<br>
+                        [3, 2, 1]
+                    </div>
+                </div>
+            </div>
+
+            <div class="pattern-box">
+<span class="comment">// Patrón para permutaciones</span><br>
+<span style="color: #ffd700;">void</span> backtrack(numeros, actual, resultado) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// CASO BASE: usé todos los números</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (actual.size() == numeros.size()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resultado.add(<span style="color: #ffd700;">new</span> ArrayList(actual));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// PROBAR cada número</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">for</span> (num : numeros) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// VALIDAR: ¿ya lo usé?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (actual.contains(num)) continue;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actual.add(num);           <span style="color: #a0aec0;">// HACER</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(...);            <span style="color: #a0aec0;">// EXPLORAR</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actual.remove(actual.size()-1); <span style="color: #a0aec0;">// DESHACER</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 LO HAREMOS EN VIVO</h3>
+                <p style="margin-top: 10px;">Programaremos esto paso a paso con debugging</p>
+            </div>
+
+            <div class="slide-number">6 / 11</div>
+        </div>
+
+        <!-- Slide 7: Ejemplo 2 - Laberinto -->
+        <div class="slide">
+            <h1>🗺️ EJEMPLO 2: LABERINTO</h1>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🎯 PROBLEMA</h3>
+                <p style="margin-top: 10px; text-align: center;">
+                    Encontrar camino de (0,0) a (2,2) en un grid 3x3
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🗺️ GRID</h3>
+                    <div style="margin-top: 15px; font-family: monospace; font-size: 1.1rem; line-height: 1.8;">
+                        S . .<br>
+                        . X .<br>
+                        . . E
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        S = inicio<br>
+                        E = meta<br>
+                        X = pared<br>
+                        . = libre
+                    </p>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>✅ CAMINO</h3>
+                    <div style="margin-top: 15px; font-family: monospace; font-size: 0.9rem;">
+                        (0,0) → (1,0) → (2,0)<br>
+                        → (2,1) → (2,2)
+                    </div>
+                    <p style="margin-top: 15px; font-size: 0.9rem;">
+                        Movimientos válidos:<br>
+                        ⬇️ Abajo<br>
+                        ➡️ Derecha<br>
+                        ⬆️ Arriba<br>
+                        ⬅️ Izquierda
+                    </p>
+                </div>
+            </div>
+
+            <div class="pattern-box">
+<span style="color: #a0aec0;">// Patrón para laberinto</span><br>
+<span style="color: #ffd700;">boolean</span> encontrarCamino(x, y, metaX, metaY, camino) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// CASO BASE: llegué a la meta</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (x == metaX && y == metaY) return <span style="color: #ffd700;">true</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// VALIDAR: posición válida</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (!esValido(x, y)) return <span style="color: #ffd700;">false</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;visitado[x][y] = <span style="color: #ffd700;">true</span>;      <span style="color: #a0aec0;">// HACER</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;camino.add(<span style="color: #98d982;">"(x,y)"</span>);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// EXPLORAR 4 direcciones</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (encontrarCamino(x+1, y, ...)) return <span style="color: #ffd700;">true</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;visitado[x][y] = <span style="color: #ffd700;">false</span>;     <span style="color: #a0aec0;">// DESHACER</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;camino.remove(camino.size()-1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return <span style="color: #ffd700;">false</span>;<br>
+}
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 LO HAREMOS EN VIVO</h3>
+                <p style="margin-top: 10px;">Con visualización en el pizarrón</p>
+            </div>
+
+            <div class="slide-number">7 / 11</div>
+        </div>
+
+        <!-- Slide 8: Ejemplo 3 - N-Reinas -->
+        <div class="slide">
+            <h1>♟️ EJEMPLO 3: N-REINAS (N=4)</h1>
+            
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">👑 PROBLEMA</h3>
+                <p style="margin-top: 10px; text-align: center;">
+                    Colocar 4 reinas en un tablero 4x4 sin que se ataquen
+                </p>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📋 REGLAS</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>❌ Misma fila</li>
+                        <li>❌ Misma columna</li>
+                        <li>❌ Misma diagonal</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>✅ SOLUCIÓN</h3>
+                    <div style="margin-top: 15px; font-family: monospace; font-size: 1.1rem; line-height: 1.8;">
+                        . Q . .<br>
+                        . . . Q<br>
+                        Q . . .<br>
+                        . . Q .
+                    </div>
+                </div>
+            </div>
+
+            <div class="pattern-box">
+<span style="color: #a0aec0;">// Patrón para N-Reinas</span><br>
+<span style="color: #ffd700;">boolean</span> colocarReinas(fila) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// CASO BASE: coloqué todas las reinas</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (fila == N) return <span style="color: #ffd700;">true</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// PROBAR cada columna</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">for</span> (col = 0; col < N; col++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// VALIDAR: ¿puedo colocar reina aquí?</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (esSeguro(fila, col)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tablero[fila] = col;    <span style="color: #a0aec0;">// HACER</span><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a0aec0;">// EXPLORAR</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ffd700;">if</span> (colocarReinas(fila + 1)) return <span style="color: #ffd700;">true</span>;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tablero[fila] = -1;     <span style="color: #a0aec0;">// DESHACER</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return <span style="color: #ffd700;">false</span>;<br>
+}
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 PARA LA TAREA</h3>
+                <p style="margin-top: 10px;">Generalizarás esto para cualquier N</p>
+            </div>
+
+            <div class="slide-number">8 / 11</div>
+        </div>
+
+        <!-- Slide 9: Cuándo usar -->
+        <div class="slide">
+            <h1>🤔 ¿CUÁNDO USAR BACKTRACKING?</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ USA BACKTRACKING</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>✅ Buscar TODAS las soluciones</li>
+                        <li>✅ Problemas de satisfacción de restricciones</li>
+                        <li>✅ Exploración de caminos</li>
+                        <li>✅ Optimización combinatoria</li>
+                        <li>✅ Problemas NP</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>❌ NO USES BACKTRACKING</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>❌ Solo necesitas UNA solución simple</li>
+                        <li>❌ Hay algoritmo más eficiente</li>
+                        <li>❌ El espacio de búsqueda es masivo</li>
+                        <li>❌ No hay restricciones que podar</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">🎯 CARACTERÍSTICAS CLAVE</h3>
+                <div class="grid" style="margin-top: 15px;">
+                    <div>
+                        <h4 style="color: #667eea;">Necesitas backtracking si:</h4>
+                        <ul style="margin-top: 10px; font-size: 0.9rem;">
+                            <li>El problema pide "todas las soluciones"</li>
+                            <li>Hay restricciones que validar</li>
+                            <li>Puedes podar ramas inválidas</li>
+                            <li>Es un problema de decisión secuencial</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea;">Ejemplos clásicos:</h4>
+                        <ul style="margin-top: 10px; font-size: 0.9rem;">
+                            <li>Sudoku, N-Reinas</li>
+                            <li>Colorear grafos</li>
+                            <li>Laberintos con obstáculos</li>
+                            <li>Generación de combinaciones</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 REGLA DE ORO</h3>
+                <p style="margin-top: 10px; font-size: 1.1rem;">
+                    Si necesitas explorar un árbol de decisiones con restricciones,<br>
+                    <strong>probablemente necesitas backtracking</strong>
+                </p>
+            </div>
+
+            <div class="slide-number">9 / 11</div>
+        </div>
+
+        <!-- Slide 10: Comparación -->
+        <div class="slide">
+            <h1>📊 RECURSIÓN vs BACKTRACKING</h1>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🔄 RECURSIÓN SIMPLE</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px; font-size: 0.9rem;">
+                        <li>✅ Un camino hacia adelante</li>
+                        <li>✅ Sin retroceso</li>
+                        <li>✅ Ejemplo: factorial, fibonacci</li>
+                        <li>✅ No modifica estado</li>
+                    </ul>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem;">
+                        int factorial(int n) {<br>
+                        &nbsp;&nbsp;if (n == 1) return 1;<br>
+                        &nbsp;&nbsp;return n * factorial(n-1);<br>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>↩️ BACKTRACKING</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px; font-size: 0.9rem;">
+                        <li>✅ Múltiples caminos</li>
+                        <li>✅ Con retroceso</li>
+                        <li>✅ Ejemplo: laberintos, N-reinas</li>
+                        <li>✅ Hace/deshace cambios</li>
+                    </ul>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem;">
+                        void backtrack(...) {<br>
+                        &nbsp;&nbsp;estado.hacer();<br>
+                        &nbsp;&nbsp;backtrack(...);<br>
+                        &nbsp;&nbsp;estado.deshacer(); ⬅️<br>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">🔑 DIFERENCIA FUNDAMENTAL</h3>
+                <p style="text-align: center; margin-top: 15px; font-size: 1.1rem;">
+                    Backtracking = Recursión + Deshacer cambios
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 RECUERDA</h3>
+                <p style="margin-top: 10px;">
+                    Todo backtracking usa recursión,<br>
+                    pero no toda recursión es backtracking
+                </p>
+            </div>
+
+            <div class="slide-number">10 / 11</div>
+        </div>
+
+        <!-- Slide 11: Cierre -->
+        <div class="slide title-slide">
+            <h1>🎉 ¡Excelente trabajo!</h1>
+            
+            <div style="margin-top: 40px;">
+                <h2>📚 RESUMEN DE HOY</h2>
+                <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                    <p style="font-size: 1.1rem;">✅ ¿Qué es backtracking?</p>
+                    <p style="font-size: 1.1rem; margin-top: 10px;">✅ El patrón: Validar → Hacer → Explorar → Deshacer</p>
+                    <p style="font-size: 1.1rem; margin-top: 10px;">✅ 3 ejemplos progresivos</p>
+                    <p style="font-size: 1.1rem; margin-top: 10px;">✅ Cuándo usarlo</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>🎯 PARA PRACTICAR</h3>
+                <p style="opacity: 0.9; margin-top: 10px;">Implementa los ejemplos vistos en clase</p>
+                <p style="opacity: 0.9;">Experimenta con diferentes problemas de backtracking</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>🔮 PRÓXIMA SEMANA</h3>
+                <p style="opacity: 0.9; margin-top: 10px;">Árboles: TreeMap y TreeSet</p>
+            </div>
+
+            <div class="slide-number">11 / 11</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>
