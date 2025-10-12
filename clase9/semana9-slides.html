@@ -408,7 +408,497 @@ Iterator&lt;String&gt; it = libros.<span class="keyword">iterator</span>();<br><
             <div class="slide-number">3 / 16</div>
         </div>
 
-        <!-- Las demás slides 4-13 se mantienen igual -->
+        <!-- Slide 4: Iterator con diferentes estructuras -->
+        <div class="slide">
+            <h1>🔗 ITERATOR CON DIFERENTES ESTRUCTURAS</h1>
+            
+            <div class="code-example">
+<span class="comment">// EJEMPLO 2: LinkedList con Iterator (código idéntico)</span><br>
+LinkedList&lt;Integer&gt; numeros = <span class="keyword">new</span> LinkedList&lt;&gt;();<br>
+numeros.add(10);<br>
+numeros.add(20);<br>
+numeros.add(30);<br><br>
+Iterator&lt;Integer&gt; it = numeros.<span class="keyword">iterator</span>();<br>
+<span class="keyword">while</span> (it.<span class="keyword">hasNext</span>()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(it.<span class="keyword">next</span>());<br>
+}<br><br>
+<span class="comment">// EJEMPLO 3: Queue SIN destruirla</span><br>
+Queue&lt;String&gt; cola = <span class="keyword">new</span> LinkedList&lt;&gt;();<br>
+cola.offer(<span class="string">"Primero"</span>);<br>
+cola.offer(<span class="string">"Segundo"</span>);<br>
+cola.offer(<span class="string">"Tercero"</span>);<br><br>
+<span class="comment">// Recorrer sin destruir la cola</span><br>
+Iterator&lt;String&gt; itCola = cola.<span class="keyword">iterator</span>();<br>
+<span class="keyword">while</span> (itCola.<span class="keyword">hasNext</span>()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(itCola.<span class="keyword">next</span>());<br>
+}<br>
+<span class="comment">// ¡La cola sigue intacta!</span><br>
+System.out.println(<span class="string">"Cola tiene: "</span> + cola.size() + <span class="string">" elementos"</span>);
+            </div>
+
+            <div class="highlight-box">
+                <h3>💡 PUNTO CLAVE</h3>
+                <p>¡El código es IDÉNTICO sin importar la estructura!</p>
+                <p>No necesitas saber si es array o nodos enlazados</p>
+            </div>
+
+            <div class="slide-number">4 / 16</div>
+        </div>
+
+        <!-- Slide 5: Eliminar con Iterator -->
+        <div class="slide">
+            <h1>🗑️ ELIMINAR ELEMENTOS CON ITERATOR</h1>
+            
+            <div class="grid">
+                <div class="card card-red">
+                    <h3>❌ INCORRECTO</h3>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+                        for (Integer num : nums) {<br>
+                        &nbsp;&nbsp;if (num > 15) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;nums.remove(num);<br>
+                        &nbsp;&nbsp;}<br>
+                        }<br><br>
+                        <span style="color: #ff6b6b;">⚠️ ConcurrentModificationException</span>
+                    </div>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>✅ CORRECTO</h3>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+                        Iterator&lt;Integer&gt; it = nums.iterator();<br>
+                        while (it.hasNext()) {<br>
+                        &nbsp;&nbsp;Integer num = it.next();<br>
+                        &nbsp;&nbsp;if (num > 15) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;it.remove(); // ✅<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="comment">// EJERCICIO: Eliminar todos los números pares</span><br>
+ArrayList&lt;Integer&gt; numeros = <span class="keyword">new</span> ArrayList&lt;&gt;(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)<br>
+);<br><br>
+Iterator&lt;Integer&gt; it = numeros.<span class="keyword">iterator</span>();<br>
+<span class="keyword">while</span> (it.<span class="keyword">hasNext</span>()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (it.<span class="keyword">next</span>() % 2 == 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;it.<span class="keyword">remove</span>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}<br>
+System.out.println(numeros); <span class="comment">// [1, 3, 5, 7, 9]</span>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">⚠️ REGLA IMPORTANTE</h3>
+                <p>Java NO permite modificar una colección mientras la recorres con for-each.</p>
+                <p><strong>Con iterator.remove() SÍ es seguro</strong></p>
+            </div>
+
+            <div class="slide-number">5 / 16</div>
+        </div>
+
+        <!-- Slide 6: Tabla de Comparación -->
+        <div class="slide">
+            <h1>📊 COMPARACIÓN: 3 FORMAS DE RECORRER</h1>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Necesitas</th>
+                            <th>For índice</th>
+                            <th>For-each</th>
+                            <th>Iterator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Solo recorrer</strong></td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Eliminar</strong></td>
+                            <td>❌</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ArrayList</strong></td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LinkedList</strong></td>
+                            <td>❌ Lento</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Queue/Set</strong></td>
+                            <td>❌</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Necesito índice</strong></td>
+                            <td>✅</td>
+                            <td>❌</td>
+                            <td>❌</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🎯 REGLA GENERAL</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>📖 ¿Solo leer? → <strong>For-each</strong> (más limpio)</li>
+                        <li>🗑️ ¿Eliminar? → <strong>Iterator</strong></li>
+                        <li>🔢 ¿Necesitas índice? → <strong>For tradicional</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>💡 DATO IMPORTANTE</h3>
+                    <p style="margin-top: 15px;">El <strong>for-each</strong> usa Iterator internamente.</p>
+                    <p style="margin-top: 10px;">Es "azúcar sintáctica" para hacerlo más legible</p>
+                </div>
+            </div>
+
+            <div class="slide-number">6 / 16</div>
+        </div>
+
+        <!-- Slide 7: Transición a Recursión -->
+        <div class="slide">
+            <h1>🔄 TRANSICIÓN: ITERATIVO → RECURSIVO</h1>
+            
+            <div class="concept-box">
+                <h2 style="color: #2c3e50;">DOS FORMAS DE PROCESAR COLECCIONES</h2>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="color: #667eea;">🔁 ITERADORES (Iterativo)</h3>
+                        <ul style="margin-top: 10px;">
+                            <li>Paso a paso, uno tras otro</li>
+                            <li>Controlado externamente</li>
+                            <li>Usando while/for</li>
+                            <li>Fácil de visualizar</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #764ba2;">🔄 RECURSIÓN (Recursivo)</h3>
+                        <ul style="margin-top: 10px;">
+                            <li>Divide el problema en subproblemas</li>
+                            <li>Se llama a sí mismo</li>
+                            <li>Más elegante para ciertos problemas</li>
+                            <li>Usa call stack implícito</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🎯 AHORA VAMOS A VER</h3>
+                <p style="font-size: 1.2rem; margin-top: 15px;">¿Cómo funciona la RECURSIÓN?</p>
+                <p style="margin-top: 10px;">Una función que se llama a sí misma</p>
+            </div>
+
+            <div class="slide-number">7 / 16</div>
+        </div>
+
+        <!-- Slide 8: ¿Qué es Recursión? -->
+        <div class="slide">
+            <h1>🔄 ¿QUÉ ES RECURSIÓN?</h1>
+            
+            <div class="highlight-box">
+                <h2>Una función que se llama a sí misma</h2>
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50; text-align: center;">🎯 COMPONENTES ESENCIALES</h3>
+                <div class="grid" style="margin-top: 20px;">
+                    <div>
+                        <h4 style="color: #667eea;">1️⃣ CASO BASE</h4>
+                        <p>Condición de parada</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Sin esto → StackOverflowError</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #667eea;">2️⃣ CASO RECURSIVO</h4>
+                        <p>Llamada a sí misma</p>
+                        <p style="font-size: 0.9rem; margin-top: 5px;">Con parámetros diferentes</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <h4 style="color: #667eea;">3️⃣ PROGRESO HACIA EL CASO BASE</h4>
+                    <p>Cada llamada debe acercarse a la condición de parada</p>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="comment">// EJEMPLO: Cuenta regresiva</span><br>
+<span class="keyword">public static void</span> cuentaRegresiva(<span class="keyword">int</span> n) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// CASO BASE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n == 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"¡Despegue!"</span>);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// CASO RECURSIVO</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(n);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cuentaRegresiva(n - 1);<br>
+}
+            </div>
+
+            <div class="slide-number">8 / 16</div>
+        </div>
+
+        <!-- Slide 9: Call Stack -->
+        <div class="slide">
+            <h1>📚 CALL STACK: LA MAGIA DETRÁS</h1>
+            
+            <div class="code-example">
+<span class="comment">// EJEMPLO: Factorial</span><br>
+<span class="keyword">public static int</span> factorial(<span class="keyword">int</span> n) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n == 0 || n == 1) <span class="keyword">return</span> 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> n * factorial(n - 1);<br>
+}
+            </div>
+
+            <div class="recursion-tree">
+factorial(4)<br>
+│<br>
+├─ return 4 * factorial(3)<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ return 3 * factorial(2)<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ return 2 * factorial(1)<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ return 1<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ return 2 * 1 = 2<br>
+│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ return 3 * 2 = 6<br>
+└─ return 4 * 6 = 24
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🔍 ¿Cómo funciona?</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>📚 Usa Stack implícito</li>
+                        <li>➕ Cada llamada se apila</li>
+                        <li>➖ Se resuelven de adentro hacia afuera</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>⚠️ PELIGRO</h3>
+                    <p style="margin-top: 10px;">Sin caso base:</p>
+                    <p style="margin-top: 5px; color: #ff6b6b; font-weight: bold;">StackOverflowError</p>
+                </div>
+            </div>
+
+            <div class="slide-number">9 / 16</div>
+        </div>
+
+        <!-- Slide 10: Visualización Stack -->
+        <div class="slide">
+            <h1>📊 VISUALIZACIÓN DEL CALL STACK</h1>
+            
+            <div class="stack-visual">
+                <div class="stack-item" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                    factorial(1) → return 1
+                </div>
+                <div style="font-size: 1.5rem; color: #667eea;">⬇️</div>
+                <div class="stack-item">
+                    factorial(2) → return 2 * 1 = 2
+                </div>
+                <div style="font-size: 1.5rem; color: #667eea;">⬇️</div>
+                <div class="stack-item">
+                    factorial(3) → return 3 * 2 = 6
+                </div>
+                <div style="font-size: 1.5rem; color: #667eea;">⬇️</div>
+                <div class="stack-item">
+                    factorial(4) → return 4 * 6 = 24
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>📥 FASE DE APILADO</h3>
+                    <p style="margin-top: 10px;">factorial(4) → factorial(3)</p>
+                    <p>factorial(3) → factorial(2)</p>
+                    <p>factorial(2) → factorial(1)</p>
+                    <p><strong>factorial(1) = 1 ✅</strong></p>
+                </div>
+                
+                <div class="card card-orange">
+                    <h3>📤 RESOLUCIÓN</h3>
+                    <p style="margin-top: 10px;">factorial(1) = 1</p>
+                    <p>factorial(2) = 2 * 1 = 2</p>
+                    <p>factorial(3) = 3 * 2 = 6</p>
+                    <p><strong>factorial(4) = 4 * 6 = 24</strong></p>
+                </div>
+            </div>
+
+            <div class="slide-number">10 / 16</div>
+        </div>
+
+        <!-- Slide 11: Patrones -->
+        <div class="slide">
+            <h1>🎯 PATRONES RECURSIVOS</h1>
+            
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>1️⃣ REDUCCIÓN SIMPLE</h3>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+                        int suma(int n) {<br>
+                        &nbsp;&nbsp;if (n == 1) return 1;<br>
+                        &nbsp;&nbsp;return n + suma(n-1);<br>
+                        }
+                    </div>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>2️⃣ DIVISIÓN Y CONQUISTA</h3>
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+                        int buscar(int[] arr,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int x, int ini, int fin) {<br>
+                        &nbsp;&nbsp;if (ini > fin) return -1;<br>
+                        &nbsp;&nbsp;int mid = (ini+fin)/2;<br>
+                        &nbsp;&nbsp;// dividir...<br>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+<span class="comment">// PATRÓN 3: Procesamiento</span><br>
+<span class="keyword">public static int</span> maximo(<span class="keyword">int</span>[] arr, <span class="keyword">int</span> index) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (index == arr.length - 1) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> arr[index];<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> maxResto = maximo(arr, index + 1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> Math.max(arr[index], maxResto);<br>
+}
+            </div>
+
+            <div class="concept-box">
+                <h3 style="color: #2c3e50;">🎯 BACKTRACKING (Próxima semana)</h3>
+                <p style="margin-top: 10px;">Probar → Funciona → Seguir | No funciona → Regresar</p>
+            </div>
+
+            <div class="slide-number">11 / 16</div>
+        </div>
+
+        <!-- Slide 12: Cuándo usar -->
+        <div class="slide">
+            <h1>🤔 ¿CUÁNDO USAR RECURSIÓN?</h1>
+            
+            <div class="grid">
+                <div class="card card-green">
+                    <h3>✅ USA RECURSIÓN</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>✅ Subproblemas similares</li>
+                        <li>✅ Estructura recursiva (árboles)</li>
+                        <li>✅ Más legible</li>
+                        <li>✅ No hay problemas de rendimiento</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-red">
+                    <h3>❌ EVITA RECURSIÓN</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px;">
+                        <li>❌ Iteración es más simple</li>
+                        <li>❌ Llamadas redundantes</li>
+                        <li>❌ Stack overflow posible</li>
+                        <li>❌ Rendimiento crítico</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>¿Recursión?</th>
+                            <th>Razón</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Recorrer árboles</td>
+                            <td style="color: green;">✅ SÍ</td>
+                            <td>Estructura recursiva</td>
+                        </tr>
+                        <tr>
+                            <td>Búsqueda binaria</td>
+                            <td style="color: green;">✅ SÍ</td>
+                            <td>División y conquista</td>
+                        </tr>
+                        <tr>
+                            <td>ArrayList simple</td>
+                            <td style="color: red;">❌ NO</td>
+                            <td>Loop es mejor</td>
+                        </tr>
+                        <tr>
+                            <td>Laberintos</td>
+                            <td style="color: green;">✅ SÍ</td>
+                            <td>Backtracking natural</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="slide-number">12 / 16</div>
+        </div>
+
+        <!-- Slide 13: Práctica -->
+        <div class="slide">
+            <h1>🛠️ VAMOS A LA PRÁCTICA</h1>
+            
+            <div class="center-content">
+                <div class="card card-green" style="display: inline-block; max-width: 800px;">
+                    <h3>🎯 EJERCICIOS A IMPLEMENTAR</h3>
+                    <p style="margin-top: 15px;">Funciones recursivas paso a paso</p>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>📋 EJERCICIOS BÁSICOS</h3>
+                    <ol style="margin-top: 10px;">
+                        <li>Factorial recursivo</li>
+                        <li>Potencia (base^exp)</li>
+                        <li>Invertir String</li>
+                        <li>Suma de dígitos</li>
+                    </ol>
+                </div>
+                
+                <div class="card card-purple">
+                    <h3>🔧 CON ESTRUCTURAS</h3>
+                    <ol style="margin-top: 10px;">
+                        <li>Buscar en LinkedList</li>
+                        <li>Imprimir al revés</li>
+                        <li>Máximo en array</li>
+                        <li>Contar elementos</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>🔥 ¡Manos al código!</h3>
+                <p>Implementación con debugging en vivo</p>
+            </div>
+
+            <div class="slide-number">13 / 16</div>
+        </div>
+
+        <!-- Las demás slides 14-16 -->
 
         <!-- Slide 14: Trabajo Independiente -->
         <div class="slide title-slide">
