@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Del Problema al Código - Clase Práctica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 20px 0 15px 0;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin: 15px 0 10px 0;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: #34495e;
+            margin: 10px 0;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 10px 0;
+            color: #2c3e50;
+        }
+
+        ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .card {
+            padding: 25px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        }
+
+        .card-purple {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+        }
+
+        .card-green {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+        }
+
+        .card-orange {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .problem-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 5px solid #ff7675;
+            margin: 25px 0;
+        }
+
+        .problem-box h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+        }
+
+        .work-area {
+            background: #fff9e6;
+            padding: 30px;
+            border-radius: 12px;
+            border: 3px dashed #fdcb6e;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .work-area h3 {
+            color: #e17055;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .badge-easy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .highlight-box h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .step-box {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 15px auto;
+        }
+
+        .arrow-right {
+            font-size: 3rem;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container {
+                flex-direction: column;
+            }
+
+            .arrow-right {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-container">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: PORTADA -->
+        <div class="slide title-slide">
+            <h1>🚀 Del Problema al Código</h1>
+            <h2 style="margin-top: 30px;">La Habilidad Fundamental del Ingeniero</h2>
+            <div style="margin-top: 50px; font-size: 1.3rem;">
+                <p style="opacity: 0.9;">Estructura de Datos</p>
+                <p style="opacity: 0.9; margin-top: 10px;">Clase Práctica Interactiva</p>
+            </div>
+            <div style="margin-top: 60px; font-size: 1.8rem; opacity: 0.9;">
+                💡 "El código es solo la traducción final de una buena solución"
+            </div>
+            <div class="slide-number">1 / 8</div>
+        </div>
+
+        <!-- Slide 2: ¿QUÉ HACE UN INGENIERO? -->
+        <div class="slide">
+            <h1>🎯 ¿QUÉ HACE UN INGENIERO DE SISTEMAS?</h1>
+            
+            <div class="highlight-box" style="margin: 40px 0;">
+                <h2 style="color: white;">Resolvemos problemas usando tecnología</h2>
+            </div>
+
+            <div class="grid">
+                <div class="card card-blue">
+                    <h3>🔍 NO ES SOLO...</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>❌ Escribir código sin pensar</li>
+                        <li>❌ Memorizar sintaxis</li>
+                        <li>❌ Copiar y pegar de internet</li>
+                        <li>❌ Hacer que "funcione de alguna manera"</li>
+                    </ul>
+                </div>
+                
+                <div class="card card-green">
+                    <h3>✅ ES REALMENTE...</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>✓ Entender el problema a fondo</li>
+                        <li>✓ Diseñar soluciones eficientes</li>
+                        <li>✓ Elegir las herramientas correctas</li>
+                        <li>✓ Traducir la solución a código</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box" style="margin-top: 30px;">
+                <h3 style="color: #667eea; text-align: center;">💡 LA CLAVE DEL ÉXITO</h3>
+                <p style="text-align: center; font-size: 1.2rem; margin-top: 15px;">
+                    Un buen ingeniero piensa primero, codifica después
+                </p>
+            </div>
+
+            <div class="slide-number">2 / 8</div>
+        </div>
+
+        <!-- Slide 3: EL PROCESO -->
+        <div class="slide">
+            <h1>🔄 EL PROCESO DE RESOLUCIÓN DE PROBLEMAS</h1>
+            
+            <div class="steps-container">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="card card-blue" style="min-height: 150px;">
+                        <h3>🧩 PROBLEMA</h3>
+                        <p>Entender qué necesitamos resolver</p>
+                    </div>
+                </div>
+                
+                <div class="arrow-right">→</div>
+                
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="card card-purple" style="min-height: 150px;">
+                        <h3>💡 SOLUCIÓN</h3>
+                        <p>Diseñar cómo lo vamos a resolver</p>
+                    </div>
+                </div>
+                
+                <div class="arrow-right">→</div>
+                
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="card card-green" style="min-height: 150px;">
+                        <h3>💻 CÓDIGO</h3>
+                        <p>Implementar la solución en Java</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 40px;">
+                <h3>🎯 HOY HAREMOS 3 EJERCICIOS SIGUIENDO ESTE PROCESO</h3>
+                <p style="margin-top: 10px;">Trabajaremos juntos en cada paso</p>
+            </div>
+
+            <div class="grid" style="margin-top: 30px;">
+                <div class="card card-orange">
+                    <h4>📝 EJERCICIO 1</h4>
+                    <span class="badge badge-easy">Nivel: Básico</span>
+                    <p style="margin-top: 10px;">Problema simple sin estructuras complejas</p>
+                </div>
+                <div class="card card-orange">
+                    <h4>📝 EJERCICIO 2</h4>
+                    <span class="badge badge-medium">Nivel: Intermedio</span>
+                    <p style="margin-top: 10px;">Introducimos estructuras básicas</p>
+                </div>
+            </div>
+            <div style="max-width: 50%; margin: 0 auto;">
+                <div class="card card-orange">
+                    <h4>📝 EJERCICIO 3</h4>
+                    <span class="badge badge-hard">Nivel: Avanzado</span>
+                    <p style="margin-top: 10px;">Aplicamos Stack, Queue o LinkedList</p>
+                </div>
+            </div>
+
+            <div class="slide-number">3 / 8</div>
+        </div>
+
+        <!-- Slide 4: EJERCICIO 1 - PROBLEMA -->
+        <div class="slide">
+            <h1>📝 EJERCICIO 1: VALIDADOR DE CONTRASEÑAS</h1>
+            <span class="badge badge-easy">Nivel: Básico</span>
+            
+            <div class="problem-box">
+                <h3>🧩 EL PROBLEMA</h3>
+                <p><strong>Contexto:</strong> Un sistema necesita validar que las contraseñas de los usuarios cumplan ciertos requisitos de seguridad.</p>
+                
+                <h4 style="margin-top: 20px; color: #2c3e50;">Requisitos de una contraseña válida:</h4>
+                <ul style="text-align: left; color: #2c3e50;">
+                    <li>Debe tener al menos 8 caracteres</li>
+                    <li>Debe contener al menos una letra mayúscula</li>
+                    <li>Debe contener al menos una letra minúscula</li>
+                    <li>Debe contener al menos un número</li>
+                    <li>Debe contener al menos un carácter especial (!@#$%^&*)</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; color: #2c3e50;">Lo que necesitamos:</h4>
+                <p style="color: #2c3e50;">Crear un método que reciba una contraseña (String) y devuelva:</p>
+                <ul style="text-align: left; color: #2c3e50;">
+                    <li><strong>true</strong> si la contraseña cumple TODOS los requisitos</li>
+                    <li><strong>false</strong> si falta algún requisito</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; color: #2c3e50;">Ejemplos:</h4>
+                <ul style="text-align: none; padding-left: 20px; color: #2c3e50;">
+                    <li>"Abc123!@" → ✅ VÁLIDA (cumple todo)</li>
+                    <li>"abc123!@" → ❌ INVÁLIDA (falta mayúscula)</li>
+                    <li>"Abcdefgh!" → ❌ INVÁLIDA (falta número)</li>
+                    <li>"Ab1!" → ❌ INVÁLIDA (muy corta, solo 4 caracteres)</li>
+                </ul>
+            </div>
+
+            <div class="work-area">
+                <h3>🤔 AHORA PENSEMOS JUNTOS</h3>
+                <p style="font-size: 1.1rem; margin-top: 15px;">
+                    ¿Cómo resolverían este problema?<br>
+                    ¿Qué pasos necesitamos seguir?
+                </p>
+            </div>
+
+            <div class="slide-number">4 / 8</div>
+        </div>
+
+        <!-- Slide 5: EJERCICIO 2 - PROBLEMA -->
+        <div class="slide">
+            <h1>📝 EJERCICIO 2: GESTOR DE TAREAS PENDIENTES</h1>
+            <span class="badge badge-medium">Nivel: Intermedio</span>
+            
+            <div class="problem-box">
+                <h3>🧩 EL PROBLEMA</h3>
+                <p><strong>Contexto:</strong> Necesitas un sistema simple para gestionar tus tareas del día. Las tareas tienen prioridades diferentes y debes poder organizarlas.</p>
+                
+                <h4 style="margin-top: 20px; color: #2c3e50;">Funcionalidades requeridas:</h4>
+                <ul style="text-align: left; color: #2c3e50;">
+                    <li><strong>Agregar tarea:</strong> Añadir una nueva tarea con descripción y prioridad (Alta, Media, Baja)</li>
+                    <li><strong>Completar tarea:</strong> Marcar una tarea como completada y removerla de la lista</li>
+                    <li><strong>Ver tareas pendientes:</strong> Mostrar todas las tareas ordenadas por prioridad</li>
+                    <li><strong>Contar por prioridad:</strong> ¿Cuántas tareas tengo de cada prioridad?</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; color: #2c3e50;">Ejemplo de uso:</h4>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px; text-align: left;">
+                    <p style="color: #2c3e50;"><strong>Agregar:</strong></p>
+                    <ul style="color: #555;">
+                        <li>"Estudiar para el examen" - Prioridad Alta</li>
+                        <li>"Comprar el almuerzo" - Prioridad Media</li>
+                        <li>"Revisar correos" - Prioridad Baja</li>
+                        <li>"Hacer ejercicio" - Prioridad Media</li>
+                    </ul>
+                    <p style="color: #2c3e50; margin-top: 15px;"><strong>Ver pendientes ordenadas:</strong></p>
+                    <ul style="color: #555;">
+                        <li>[ALTA] Estudiar para el examen</li>
+                        <li>[MEDIA] Comprar el almuerzo</li>
+                        <li>[MEDIA] Hacer ejercicio</li>
+                        <li>[BAJA] Revisar correos</li>
+                    </ul>
+                    <p style="color: #2c3e50; margin-top: 15px;"><strong>Completar:</strong> "Comprar el almuerzo"</p>
+                    <p style="color: #2c3e50; margin-top: 15px;"><strong>Contar:</strong> Alta: 1, Media: 1, Baja: 1</p>
+                </div>
+            </div>
+
+            <div class="work-area">
+                <h3>🤔 DISEÑEMOS LA SOLUCIÓN</h3>
+                <p style="font-size: 1.1rem; margin-top: 15px;">
+                    ¿Qué estructura de datos usarían?<br>
+                    ¿Cómo representamos una Tarea?<br>
+                    ¿Cómo ordenamos por prioridad?
+                </p>
+            </div>
+
+            <div class="slide-number">5 / 8</div>
+        </div>
+
+        <!-- Slide 6: EJERCICIO 3 - PROBLEMA -->
+        <div class="slide">
+            <h1>📝 EJERCICIO 3: SISTEMA DE DESHACER/REHACER</h1>
+            <span class="badge badge-hard">Nivel: Avanzado</span>
+            
+            <div class="problem-box">
+                <h3>🧩 EL PROBLEMA</h3>
+                <p><strong>Contexto:</strong> Estás desarrollando un editor de texto simple que necesita funcionalidad de UNDO (deshacer) y REDO (rehacer), similar a Ctrl+Z y Ctrl+Y.</p>
+                
+                <h4 style="margin-top: 20px; color: #2c3e50;">Funcionalidades requeridas:</h4>
+                <ul style="text-align: left; color: #2c3e50;">
+                    <li><strong>write(texto):</strong> Escribe texto en el documento</li>
+                    <li><strong>undo():</strong> Deshace la última operación de escritura</li>
+                    <li><strong>redo():</strong> Rehace la última operación deshecha</li>
+                    <li><strong>getContent():</strong> Muestra el contenido actual del documento</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; color: #2c3e50;">Reglas importantes:</h4>
+                <ul style="text-align: left; color: #2c3e50;">
+                    <li>Puedes hacer múltiples undos consecutivos</li>
+                    <li>Puedes hacer redo solo si antes hiciste undo</li>
+                    <li>Si escribes texto nuevo después de un undo, ya no puedes hacer redo de lo anterior</li>
+                    <li>No hay límite en el número de operaciones que puedes deshacer</li>
+                </ul>
+
+                <h4 style="margin-top: 20px; color: #2c3e50;">Ejemplo de uso:</h4>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px; text-align: left;">
+                    <ul style="color: #555; list-style: none; padding: 0;">
+                        <li>📝 write("Hola ") → Contenido: "Hola "</li>
+                        <li>📝 write("mundo") → Contenido: "Hola mundo"</li>
+                        <li>📝 write("!") → Contenido: "Hola mundo!"</li>
+                        <li>↩️ undo() → Contenido: "Hola mundo"</li>
+                        <li>↩️ undo() → Contenido: "Hola "</li>
+                        <li>↪️ redo() → Contenido: "Hola mundo"</li>
+                        <li>📝 write(" hermoso") → Contenido: "Hola mundo hermoso"</li>
+                        <li>❌ redo() → No hace nada (perdimos el "!" porque escribimos texto nuevo)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="work-area">
+                <h3>🤔 ANALICEMOS EL PROBLEMA</h3>
+                <p style="font-size: 1.1rem; margin-top: 15px;">
+                    ¿Qué estructuras de datos necesitamos?<br>
+                    ¿Stack o Queue? ¿Por qué?<br>
+                    ¿Cuántas estructuras necesitamos?
+                </p>
+            </div>
+
+            <div class="slide-number">6 / 8</div>
+        </div>
+
+        <!-- Slide 7: METODOLOGÍA DE TRABAJO -->
+        <div class="slide">
+            <h1>🛠️ METODOLOGÍA DE TRABAJO</h1>
+            
+            <h2 style="text-align: left; color: #667eea;">Para cada ejercicio seguiremos estos pasos:</h2>
+
+            <div class="grid-3" style="margin-top: 30px;">
+                <div class="card card-blue">
+                    <h3>1️⃣ ENTENDER</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>📖 Leer el problema</li>
+                        <li>🤔 Identificar entradas y salidas</li>
+                        <li>❓ Hacer preguntas</li>
+                        <li>✅ Verificar que todos entienden</li>
+                    </ul>
+                </div>
+
+                <div class="card card-purple">
+                    <h3>2️⃣ DISEÑAR</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>💡 Proponer ideas</li>
+                        <li>📊 Elegir estructuras de datos</li>
+                        <li>✏️ Escribir pseudocódigo</li>
+                        <li>🔍 Verificar con ejemplos</li>
+                    </ul>
+                </div>
+
+                <div class="card card-green">
+                    <h3>3️⃣ CODIFICAR</h3>
+                    <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                        <li>💻 Traducir a Java</li>
+                        <li>🧪 Probar con ejemplos</li>
+                        <li>🐛 Corregir errores</li>
+                        <li>✨ Mejorar el código</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="concept-box" style="margin-top: 30px;">
+                <h3 style="color: #667eea;">💡 REGLAS DE LA CLASE</h3>
+                <div class="grid">
+                    <div>
+                        <h4 style="color: #2c3e50;">✅ SÍ puedes:</h4>
+                        <ul style="color: #555;">
+                            <li>Preguntar lo que sea</li>
+                            <li>Proponer ideas locas</li>
+                            <li>Equivocarte (¡es parte del aprendizaje!)</li>
+                            <li>Debatir con tus compañeros</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: #2c3e50;">❌ NO puedes:</h4>
+                        <ul style="color: #555;">
+                            <li>Quedarte callado si no entiendes</li>
+                            <li>Buscar la solución en internet</li>
+                            <li>Copiar código sin entenderlo</li>
+                            <li>Rendirte sin intentarlo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 30px;">
+                <h3>🎯 EL OBJETIVO DE HOY</h3>
+                <p style="margin-top: 10px; font-size: 1.2rem;">
+                    No es terminar los 3 ejercicios perfectamente.<br>
+                    Es practicar el PROCESO de pensamiento y diseño.
+                </p>
+            </div>
+
+            <div class="slide-number">7 / 8</div>
+        </div>
+
+        <!-- Slide 8: CIERRE -->
+        <div class="slide title-slide">
+            <h1>🚀 ¡Manos a la Obra!</h1>
+            
+            <div style="margin-top: 50px;">
+                <h2 style="color: white;">Orden de trabajo:</h2>
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 25px; border-radius: 15px; margin: 25px auto; max-width: 600px;">
+                    <h3 style="text-align: left; margin-bottom: 15px;">📋 Ejercicios:</h3>
+                    <ol style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                        <li>Validador de Contraseñas <span class="badge badge-easy">Básico</span></li>
+                        <li>Gestor de Tareas <span class="badge badge-medium">Intermedio</span></li>
+                        <li>Sistema Undo/Redo <span class="badge badge-hard">Avanzado</span></li>
+                    </ol>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px; font-size: 1.3rem;">
+                <p style="opacity: 0.9;">⏱️ Aproximadamente 1 hora por ejercicio</p>
+                <p style="opacity: 0.9; margin-top: 10px;">☕ Descansos cortos entre ejercicios</p>
+            </div>
+
+            <div style="margin-top: 50px; font-size: 1.5rem; opacity: 0.95;">
+                💪 "El único fracaso es no intentarlo"
+            </div>
+
+            <div class="slide-number">8 / 8</div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.style.display = 'none');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);  
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
