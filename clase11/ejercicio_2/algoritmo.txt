@@ -1,0 +1,11 @@
+1. Agregar tareas
+-Ingresar una acción junto a una clasificación de importancia(Alta, media y baja) que guardara en 3 listas dependiendo la importancia.
+ 
+2. Completar tarea
+-Buscar la tarea según su categoría, una por una, apenas la encuentra saca el dato de la lista donde se encuentre.
+ 
+3. Ver tarea pendientes
+-Buscar la tarea según su categoría, una por una, teniendo en cuenta su importancia se mostrara una antes que otra
+ 
+4. Contar por prioridad
+-Cada lista va a tener un contador de datos, cuantas hay en cada categoría, el contador se incrementa dependiendo de la longitud de datos que se tenga
