@@ -56,7 +56,7 @@ public class Libreria {
     }
 
     public Usuario consultarUsuario(String username){
-        Iterator iter = usuarios.iterator();
+        Iterator<Usuario> iter = usuarios.iterator();
         while(iter.hasNext()){
             Usuario user = iter.next();
             if (user.getUsername().equals(username)){
